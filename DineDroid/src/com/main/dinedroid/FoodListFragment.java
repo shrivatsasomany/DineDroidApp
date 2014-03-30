@@ -14,10 +14,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.main.dinedroid.MainActivity.BackgroundProcess;
 import com.main.dinedroid.dummy.DummyContent;
 
 public class FoodListFragment extends Fragment {
-   
+	
+	private Socket s;
+	private ObjectInputStream in;
+	private ObjectOutputStream out;
+	private BackgroundProcess b;
     public static final String ARG_ITEM_ID = "item_id";
 
     /**
@@ -61,16 +66,14 @@ public class FoodListFragment extends Fragment {
 		protected Void doInBackground(Void... params) {
 			// TODO Auto-generated method stub
 			try{
-//				s = new Socket("localhost", 4322);
-//
-//				out = new ObjectOutputStream(s.getOutputStream());
-//
-//				out.writeObject("Menu||Get_Menu");
-//				in = new ObjectInputStream(s.getInputStream());
-//				Menu menu = (Menu)in.readObject();
-//				in.close();
-//				out.close();
-//				s.close();
+				s = new Socket("localhost", 4322);
+				out = new ObjectOutputStream(s.getOutputStream());
+				out.writeObject("Menu||Get_Menu");
+				in = new ObjectInputStream(s.getInputStream());
+				Menu menu = (Menu)in.readObject();
+				in.close();
+				out.close();
+				s.close();
 			}
 			catch(Exception e){
 				Log.d("communication",e.getMessage());
