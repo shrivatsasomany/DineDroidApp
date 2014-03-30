@@ -7,6 +7,7 @@ import java.net.Socket;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
+import android.app.ActionBar;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -58,6 +59,9 @@ public class MainActivity extends FragmentActivity {
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
+		ActionBar actionbar = getActionBar();
+		actionbar.setDisplayShowHomeEnabled(false);
+		
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
