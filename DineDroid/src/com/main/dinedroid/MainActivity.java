@@ -59,14 +59,24 @@ public class MainActivity extends FragmentActivity {
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
-		ActionBar actionbar = getActionBar();
-		actionbar.setDisplayShowHomeEnabled(false);
-		
-		getMenuInflater().inflate(R.menu.activity_main, menu);
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayShowHomeEnabled(false);
+		actionBar.setDisplayShowTitleEnabled(false);
+		//getMenuInflater().inflate(R.menu.activity_main, menu);
+		View mActionBar = getLayoutInflater().inflate(R.layout.action_bar, null);
+		actionBar.setCustomView(mActionBar);
+		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 		return true;
 	}
 	
-	@Override 
+	public void loadMenu(){
+		list.setVisibility(View.VISIBLE);
+		FragmentTransaction ft = fm.beginTransaction();
+		ft.add(R.id.list_frame_layout, new FoodListFragment());
+		ft.commit();
+	}
+	
+	/*@Override 
 	public boolean onOptionsItemSelected(MenuItem item){
 		switch(item.getItemId()){
 		case R.id.load_menu:
@@ -75,7 +85,7 @@ public class MainActivity extends FragmentActivity {
 			ft.commit();
 		}
 		return true;
-	}
+	}*/
 
 	public class BackgroundProcess extends AsyncTask<Void, Integer, Void>{
 		@Override

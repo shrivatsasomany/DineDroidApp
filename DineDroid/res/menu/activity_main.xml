@@ -3,6 +3,7 @@
     <item
         android:id="@+id/load_menu"
         android:title="@string/load_menu"
+        android:
         android:showAsAction="ifRoom"/>
 
 </menu>
