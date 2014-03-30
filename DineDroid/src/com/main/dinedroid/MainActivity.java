@@ -6,16 +6,18 @@ import java.net.Socket;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.Menu;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
-import com.main.dinedroid.menu.Menu;
+//import com.main.dinedroid.menu.Menu;
 
 public class MainActivity extends FragmentActivity {
 
@@ -37,6 +39,7 @@ public class MainActivity extends FragmentActivity {
 		FragmentTransaction ft = fm.beginTransaction();
 		list = (FrameLayout)this.findViewById(R.id.list_frame_layout);
 		details = (FrameLayout)this.findViewById(R.id.detail_frame_layout);
+		list.setVisibility(View.GONE);
 		testButton = (Button)this.findViewById(R.id.button_test);
 		ft.add(R.id.detail_frame_layout, new FoodDetailFragment());
 		ft.commit();
@@ -45,12 +48,29 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				list.setVisibility(View.VISIBLE);
 				FragmentTransaction ft = fm.beginTransaction();
 				ft.add(R.id.list_frame_layout, new FoodListFragment());
 				ft.commit();
 			}
 		});
 		
+	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu){
+		getMenuInflater().inflate(R.menu.activity_main, menu);
+		return true;
+	}
+	
+	@Override 
+	public boolean onOptionsItemSelected(MenuItem item){
+		switch(item.getItemId()){
+		case R.id.load_menu:
+			FragmentTransaction ft = fm.beginTransaction();
+			ft.add(R.id.list_frame_layout, new FoodListFragment());
+			ft.commit();
+		}
+		return true;
 	}
 
 	public class BackgroundProcess extends AsyncTask<Void, Integer, Void>{

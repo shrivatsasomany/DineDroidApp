@@ -3,5 +3,7 @@
 
     <string name="app_name">DineDroid</string>
     <string name="title_item_detail">Item Detail</string>
+    <string name="load_menu">Load_menu</string>
+    
 
 </resources>
