@@ -9,17 +9,8 @@ import android.widget.TextView;
 
 import com.main.dinedroid.dummy.DummyContent;
 
-/**
- * A fragment representing a single Food detail screen.
- * This fragment is either contained in a {@link MainActivity}
- * in two-pane mode (on tablets) or a {@link FoodDetailActivity}
- * on handsets.
- */
 public class FoodDetailFragment extends Fragment {
-    /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
-     */
+   
     public static final String ARG_ITEM_ID = "item_id";
 
     /**
