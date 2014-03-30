@@ -8,6 +8,7 @@ import com.main.dinedroid.menu.Menu;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.app.FragmentTransaction;
 import android.app.FragmentManager;
@@ -29,7 +30,8 @@ implements FoodListFragment.Callbacks {
 		setContentView(R.layout.activity_main);
 		FragmentManager fm = getFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
-		
+		Fragment listfrag = fm.findFragmentById(R.id.listFragment);
+		ft.hide(listfrag);
 
 		if (findViewById(R.id.food_detail_container) != null) {
 			// The detail container view will be present only in the

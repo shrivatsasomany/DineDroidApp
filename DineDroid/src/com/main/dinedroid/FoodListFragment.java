@@ -9,15 +9,6 @@ import android.widget.ListView;
 
 import com.main.dinedroid.dummy.DummyContent;
 
-/**
- * A list fragment representing a list of Food Items. This fragment
- * also supports tablet devices by allowing list items to be given an
- * 'activated' state upon selection. This helps indicate which item is
- * currently being viewed in a {@link FoodDetailFragment}.
- * <p>
- * Activities containing this fragment MUST implement the {@link Callbacks}
- * interface.
- */
 public class FoodListFragment extends ListFragment {
 
     /**
