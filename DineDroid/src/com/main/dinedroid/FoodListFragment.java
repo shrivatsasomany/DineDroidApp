@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.main.dinedroid.customclasses.FoodMenuListAdapter;
@@ -27,7 +28,7 @@ public class FoodListFragment extends Fragment {
 	private ObjectOutputStream out;
 	private BackgroundAsyncTask batFactor;
 	private ListView lv;
-	private Spinner sp;
+	private ProgressBar sp;
     public static final String ARG_ITEM_ID = "item_id";
     private ArrayList<FoodItem> items = new ArrayList<FoodItem>();
     private FoodMenuListAdapter listAdapter;
@@ -41,12 +42,9 @@ public class FoodListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-    	//call Async task to get menu
-    	if(batFactor!=null)
-			batFactor.cancel(false);
-		batFactor=(BackgroundAsyncTask) new BackgroundAsyncTask().execute();
+    	downloadMenu();
         rootView = inflater.inflate(R.layout.fragment_food_list, container, false);
-        
+
         /*ArrayList<FoodItem> items = new ArrayList<FoodItem>();
         items.add(new FoodItem(1000, "Pizza", 10, false));
         items.add(new FoodItem(2000, "Pasta", 15, false));
@@ -56,8 +54,16 @@ public class FoodListFragment extends Fragment {
 				R.id.food_list_item_price, items);*/
 		lv = (ListView)rootView.findViewById(R.id.fragment_food_list_listview);
 		lv.setVisibility(View.INVISIBLE);
-		sp = (Spinner)rootView.findViewById(R.id.fragment_food_list_spinner);
+		sp = (ProgressBar)rootView.findViewById(R.id.fragment_food_list_spinner);
         return rootView;
+    }
+    
+    public void downloadMenu()
+    {
+    	//call Async task to get menu
+    	if(batFactor!=null)
+			batFactor.cancel(false);
+		batFactor=(BackgroundAsyncTask) new BackgroundAsyncTask().execute();
     }
     
     public class BackgroundAsyncTask extends AsyncTask<Void, Integer, Menu>{
@@ -72,6 +78,7 @@ public class FoodListFragment extends Fragment {
 				R.layout.food_list_item, R.id.food_list_item_name,
 				R.id.food_list_item_price, items);
 			lv.setAdapter(listAdapter);
+			listAdapter.notifyDataSetChanged();
 			lv.setVisibility(View.VISIBLE);
 			sp.setVisibility(View.GONE);
 		}
@@ -80,7 +87,7 @@ public class FoodListFragment extends Fragment {
 			Menu menu = null;
 			// TODO Auto-generated method stub
 			try{
-				s = new Socket("Shrivatsas-MacBook-Pro.local", 4322);
+				s = new Socket("75.102.94.85", 4322);
 				out = new ObjectOutputStream(s.getOutputStream());
 				out.writeObject("Menu||Get_Menu");
 				in = new ObjectInputStream(s.getInputStream());

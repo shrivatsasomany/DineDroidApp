@@ -26,8 +26,8 @@ public class MainActivity extends FragmentActivity {
 	private Socket s;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
-	private BackgroundProcess b;
 	private FragmentManager fm;
+	FoodListFragment menu_fragment = new FoodListFragment();
 	private FrameLayout list;
 	private FrameLayout details;
 
@@ -61,8 +61,16 @@ public class MainActivity extends FragmentActivity {
 	public void loadMenu(View v) {
 		list.setVisibility(View.VISIBLE);
 		FragmentTransaction ft = fm.beginTransaction();
-		ft.add(R.id.list_frame_layout, new FoodListFragment());
-		ft.commit();
+		if(!menu_fragment.isAdded())
+		{
+			ft.add(R.id.list_frame_layout, menu_fragment);
+			ft.commit();
+		}
+		else
+		{
+			menu_fragment.downloadMenu();
+		}
+		
 	}
 
 	/*
@@ -71,38 +79,5 @@ public class MainActivity extends FragmentActivity {
 	 * fm.beginTransaction(); ft.add(R.id.list_frame_layout, new
 	 * FoodListFragment()); ft.commit(); } return true; }
 	 */
-
-	public class BackgroundProcess extends AsyncTask<Void, Integer, Void> {
-		@Override
-		protected void onPreExecute() {
-
-		}
-
-		@Override
-		protected void onPostExecute(Void result) {
-
-		}
-
-		@Override
-		protected Void doInBackground(Void... params) {
-			// TODO Auto-generated method stub
-			try {
-				s = new Socket("localhost", 4322);
-
-				out = new ObjectOutputStream(s.getOutputStream());
-
-				out.writeObject("Menu||Get_Menu");
-				in = new ObjectInputStream(s.getInputStream());
-				Menu menu = (Menu) in.readObject();
-				in.close();
-				out.close();
-				s.close();
-			} catch (Exception e) {
-				Log.d("communication", e.getMessage());
-			}
-			return null;
-		}
-
-	}
 
 }
