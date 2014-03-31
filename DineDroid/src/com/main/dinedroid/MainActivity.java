@@ -30,7 +30,6 @@ public class MainActivity extends FragmentActivity {
 	private FragmentManager fm;
 	private FrameLayout list;
 	private FrameLayout details;
-	private Button testButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,20 +40,9 @@ public class MainActivity extends FragmentActivity {
 		list = (FrameLayout)this.findViewById(R.id.list_frame_layout);
 		details = (FrameLayout)this.findViewById(R.id.detail_frame_layout);
 		list.setVisibility(View.GONE);
-		testButton = (Button)this.findViewById(R.id.button_test);
 		ft.add(R.id.detail_frame_layout, new FoodDetailFragment());
 		ft.commit();
-		testButton.setOnClickListener(new OnClickListener() {
 		
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				list.setVisibility(View.VISIBLE);
-				FragmentTransaction ft = fm.beginTransaction();
-				ft.add(R.id.list_frame_layout, new FoodListFragment());
-				ft.commit();
-			}
-		});
 		
 	}
 	@Override
