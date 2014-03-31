@@ -18,18 +18,13 @@ public class FoodMenuListAdapter extends ArrayAdapter
 { 
 	Activity context;
 	ArrayList<FoodItem> items;
-	boolean[] arrows;
 	int layoutId;
 	int name_id;
-	int desc_id;
 	int price_id;
-	int tags_id;
-	int street_id;
-	int neighborhood_id;
 
 
 
-	public FoodMenuListAdapter(Activity context, int layoutId, int name_id, int desc_id, int price_id, ArrayList<FoodItem>items)
+	public FoodMenuListAdapter(Activity context, int layoutId, int name_id, int price_id, ArrayList<FoodItem>items)
 	{ 
 		super(context, layoutId, items); 
 
@@ -37,7 +32,6 @@ public class FoodMenuListAdapter extends ArrayAdapter
 		this.items = items;
 		this.layoutId = layoutId;
 		this.name_id = name_id;
-		this.desc_id = desc_id;
 		this.price_id = price_id;
 
 	} 
@@ -51,44 +45,32 @@ public class FoodMenuListAdapter extends ArrayAdapter
 			LayoutInflater inflater=context.getLayoutInflater(); 
 			row=inflater.inflate(layoutId, null); 
 		}
-		TextView title=(TextView)row.findViewById(name_id);
-		ScrollingTextView description=(ScrollingTextView)row.findViewById(desc_id);
+		ScrollingTextView title=(ScrollingTextView)row.findViewById(name_id);
 		TextView price = (TextView)row.findViewById(price_id);
-	
+
 
 
 		title.setText(items.get(pos).getName()); 
-		
-		if(items.get(pos).toString() == null)
-		{
-			description.setVisibility(ScrollingTextView.GONE);
-		}
-		else
-		{
-			description.setText(items.get(pos).toString());
-		}
-		
+
+
 		DecimalFormat oneDigit = new DecimalFormat("#,##0");
 		NumberFormat nf = NumberFormat.getInstance(Locale.US);
-		if(items.get(pos).getPrice()==null)
+
+		if(items.get(pos).isCategory())
 		{
-			price.setText("...");
+			price.setText("\u2192");
 		}
 		else if(items.get(pos).getPrice() == 0)
 		{
 			price.setText("Free");
 		}
-		else if(!items.get(pos).isCategory())
-		{
-			price.setText("...");
-		}
 		else
 		{
 			//price.setText(new Double(oneDigit.format(items.get(pos).getPrice())).toString());
-			price.setText(nf.format(items.get(pos).getPrice()));
+			price.setText("$"+nf.format(items.get(pos).getPrice()));
 		}
-		
-		
+
+
 
 		return(row); 
 	} 
