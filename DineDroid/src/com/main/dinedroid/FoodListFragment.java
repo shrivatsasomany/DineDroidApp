@@ -22,38 +22,26 @@ public class FoodListFragment extends Fragment {
 	private Socket s;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
-	private BackgroundProcess b;
+	private BackgroundAsyncTask batFactor;
     public static final String ARG_ITEM_ID = "item_id";
-
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private DummyContent.DummyItem mItem;
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public FoodListFragment() {
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-     
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
+    	//call Async task to get menu
+    	if(batFactor!=null)
+			batFactor.cancel(false);
+		batFactor=(BackgroundAsyncTask) new BackgroundAsyncTask().execute();
         View rootView = inflater.inflate(R.layout.fragment_food_list, container, false);
-
-        // Show the dummy content as text in a TextView.
-      
         return rootView;
     }
-    public class BackgroundProcess extends AsyncTask<Void, Integer, Void>{
+    
+    public class BackgroundAsyncTask extends AsyncTask<Void, Integer, Void>{
 		@Override
 		protected void onPreExecute(){
 
@@ -71,6 +59,7 @@ public class FoodListFragment extends Fragment {
 				out.writeObject("Menu||Get_Menu");
 				in = new ObjectInputStream(s.getInputStream());
 				Menu menu = (Menu)in.readObject();
+				//display this menu
 				in.close();
 				out.close();
 				s.close();

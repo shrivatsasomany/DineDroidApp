@@ -69,7 +69,7 @@ public class MainActivity extends FragmentActivity {
 		return true;
 	}
 	
-	public void loadMenu(){
+	public void loadMenu(View v){
 		list.setVisibility(View.VISIBLE);
 		FragmentTransaction ft = fm.beginTransaction();
 		ft.add(R.id.list_frame_layout, new FoodListFragment());
