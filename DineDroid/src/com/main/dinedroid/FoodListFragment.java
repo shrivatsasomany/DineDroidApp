@@ -3,19 +3,20 @@ package com.main.dinedroid;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.main.dinedroid.MainActivity.BackgroundProcess;
-import com.main.dinedroid.dummy.DummyContent;
+import com.main.dinedroid.menu.*;
+import com.main.dinedroid.customclasses.*;
 
 public class FoodListFragment extends Fragment {
 	
@@ -24,7 +25,9 @@ public class FoodListFragment extends Fragment {
 	private ObjectOutputStream out;
 	private BackgroundAsyncTask batFactor;
     public static final String ARG_ITEM_ID = "item_id";
-
+    private ArrayList<FoodItem> items = new ArrayList<FoodItem>();
+    private FoodMenuListAdapter listAdapter;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,24 +44,26 @@ public class FoodListFragment extends Fragment {
         return rootView;
     }
     
-    public class BackgroundAsyncTask extends AsyncTask<Void, Integer, Void>{
+    public class BackgroundAsyncTask extends AsyncTask<Void, Integer, Menu>{
 		@Override
 		protected void onPreExecute(){
 
 		}
 		@Override
-		protected void onPostExecute(Void result){
-
+		protected void onPostExecute(Menu result){
+			items = result.getItems();
+		
 		}
 		@Override
-		protected Void doInBackground(Void... params) {
+		protected Menu doInBackground(Void... params) {
+			Menu menu = null;
 			// TODO Auto-generated method stub
 			try{
 				s = new Socket("localhost", 4322);
 				out = new ObjectOutputStream(s.getOutputStream());
 				out.writeObject("Menu||Get_Menu");
 				in = new ObjectInputStream(s.getInputStream());
-				Menu menu = (Menu)in.readObject();
+				menu = (Menu)in.readObject();
 				//display this menu
 				in.close();
 				out.close();
@@ -67,7 +72,7 @@ public class FoodListFragment extends Fragment {
 			catch(Exception e){
 				Log.d("communication",e.getMessage());
 			}
-			return null;
+			return menu;
 		}
 
 	}
