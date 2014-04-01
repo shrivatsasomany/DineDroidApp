@@ -1,10 +1,31 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/food_detail"
-    android:text="testing"
-    style="?android:attr/textAppearanceLarge"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:textIsSelectable="true"
-    tools:context=".FoodDetailFragment" />
+    tools:context=".FoodDetailFragment" >
+	
+     <ImageView
+        android:id="@+id/fragment_food_detail_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        
+        android:src="@android:drawable/sym_def_app_icon" />
+    
+    
+    <ListView
+        android:id="@+id/fragment_food_detail_listview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="false" >
+    </ListView>
+
+    <Button
+        android:id="@+id/fragment_food_detail_back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_food_detail_listview"
+        android:text="Go Back" />
+   
+</RelativeLayout>

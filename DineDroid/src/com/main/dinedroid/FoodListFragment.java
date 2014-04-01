@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -48,10 +49,11 @@ public class FoodListFragment extends Fragment {
     private Gson gson;
     private FoodItem selectedItem;
     private final String MENU_OBJECT = "Menu_object";
-    private ListSelectionListener mListener = null;
+    private MenuListSelectionListener mListener = null;
     
-    public interface ListSelectionListener {
-		public void onListSelection(FoodItem item);
+    
+    public interface MenuListSelectionListener {
+		public void onMenuListSelection(FoodItem item);
 	}
 
 
@@ -60,7 +62,7 @@ public class FoodListFragment extends Fragment {
 		super.onAttach(activity);
 
 		try {
-			mListener = (ListSelectionListener) activity;
+			mListener = (MenuListSelectionListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
 					+ " must implement Poop");
@@ -70,7 +72,7 @@ public class FoodListFragment extends Fragment {
 
 	public void onListItemClick(FoodMenuListAdapter adapter, View v, int pos, long id) {
 		selectedItem = (FoodItem) adapter.getItem(pos);
-		mListener.onListSelection(selectedItem);
+		mListener.onMenuListSelection(selectedItem);
 		
 	}
     
@@ -96,6 +98,7 @@ public class FoodListFragment extends Fragment {
 		/*FoodMenuListAdapter adapter = new FoodMenuListAdapter(getActivity(),
 				R.layout.food_list_item, R.id.food_list_item_name,
 				R.id.food_list_item_price, items);*/
+
 
 		lv = (ListView)rootView.findViewById(R.id.fragment_food_list_listview);
 		lv.setVisibility(View.INVISIBLE);
@@ -127,15 +130,15 @@ public class FoodListFragment extends Fragment {
     
     public void getPreferences(){
 		gson = new Gson();
-        String json = sharedPref.getString(MENU_OBJECT, "");
-        menu = gson.fromJson(json, Menu.class);
+        //String json = sharedPref.getString(MENU_OBJECT, "");
+       // menu = gson.fromJson(json, Menu.class);
     }
     
     public void savePreferences(Menu result){
     	gson = new Gson();
-        String json = gson.toJson(result);
-        prefEditor.putString(MENU_OBJECT, json);
-        prefEditor.commit();
+        //String json = gson.toJson(result);
+        //prefEditor.putString(MENU_OBJECT, json);
+        //prefEditor.commit();
     }
     
     public void displayFoodMenuListAdapter(Menu result){
@@ -157,7 +160,7 @@ public class FoodListFragment extends Fragment {
 			if(result != null)
 			{
 				displayFoodMenuListAdapter(result);
-				savePreferences(result);
+				//savePreferences(result);
 			}
 			else
 			{
@@ -175,7 +178,7 @@ public class FoodListFragment extends Fragment {
 		@Override
 		protected Menu doInBackground(Void... params) {
 			//read from sharedPref
-			getPreferences();
+			//getPreferences();
 			// TODO Auto-generated method stub
 			try{
 				s = new Socket("130.203.182.82", 4322);
@@ -196,5 +199,7 @@ public class FoodListFragment extends Fragment {
 		}
 
 	}
+    
+    
 
 }

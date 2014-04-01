@@ -8,20 +8,39 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="10" >
+        android:layout_weight="10"
+        android:weightSum="100" >
 
         <FrameLayout
             android:id="@+id/list_frame_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2" >
+            android:layout_weight="65" >
+            
+            <ImageView
+                android:id="@+id/list_frame_shadow"
+                android:layout_width="10px"
+                android:layout_height="fill_parent"
+                android:scaleType="fitXY"
+                android:layout_gravity="right"
+                android:src="@drawable/brushed_bar_shadow_elong_right" />
         </FrameLayout>
+
+        
 
         <FrameLayout
             android:id="@+id/detail_frame_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1" >
+            android:layout_weight="35" >
+
+            <ImageView
+                android:id="@+id/detail_frame_shadow"
+                android:layout_width="10px"
+                android:layout_height="fill_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/brushed_bar_shadow_elong_left" />
+
         </FrameLayout>
     </LinearLayout>
 
