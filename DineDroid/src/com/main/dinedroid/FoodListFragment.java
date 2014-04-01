@@ -1,12 +1,17 @@
 package com.main.dinedroid;
 
+import com.google.gson.Gson;
+
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +38,11 @@ public class FoodListFragment extends Fragment {
     private ArrayList<FoodItem> items = new ArrayList<FoodItem>();
     private FoodMenuListAdapter listAdapter;
     private View rootView;
+    private SharedPreferences sharedPref;
+    private Editor prefEditor;
+    private Menu menu;
+    private Gson gson;
+    private final String MENU_OBJECT = "Menu_object";
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,9 +62,15 @@ public class FoodListFragment extends Fragment {
 		/*FoodMenuListAdapter adapter = new FoodMenuListAdapter(getActivity(),
 				R.layout.food_list_item, R.id.food_list_item_name,
 				R.id.food_list_item_price, items);*/
+
 		lv = (ListView)rootView.findViewById(R.id.fragment_food_list_listview);
 		lv.setVisibility(View.INVISIBLE);
+
 		sp = (ProgressBar)rootView.findViewById(R.id.fragment_food_list_spinner);
+
+		sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		prefEditor = sharedPref.edit();
+		getPreferences();
         return rootView;
     }
     
@@ -66,6 +82,28 @@ public class FoodListFragment extends Fragment {
 		batFactor=(BackgroundAsyncTask) new BackgroundAsyncTask().execute();
     }
     
+    public void getPreferences(){
+		gson = new Gson();
+        String json = sharedPref.getString(MENU_OBJECT, "");
+        menu = gson.fromJson(json, Menu.class);
+    }
+    
+    public void savePreferences(Menu result){
+    	gson = new Gson();
+        String json = gson.toJson(result);
+        prefEditor.putString(MENU_OBJECT, json);
+        prefEditor.commit();
+    }
+    
+    public void displayFoodMenuListAdapter(Menu result){
+    	items = result.getItems();
+		listAdapter = new FoodMenuListAdapter(getActivity(),
+			R.layout.food_list_item, R.id.food_list_item_name,
+			R.id.food_list_item_price, items);
+		lv.setAdapter(listAdapter);
+		lv.setVisibility(View.VISIBLE);
+		sp.setVisibility(View.GONE);
+    }
     public class BackgroundAsyncTask extends AsyncTask<Void, Integer, Menu>{
 		@Override
 		protected void onPreExecute(){
@@ -73,18 +111,21 @@ public class FoodListFragment extends Fragment {
 		}
 		@Override
 		protected void onPostExecute(Menu result){
-			items = result.getItems();
+			displayFoodMenuListAdapter(result);
+			savePreferences(result);
+			/*items = result.getItems();
 			listAdapter = new FoodMenuListAdapter(getActivity(),
 				R.layout.food_list_item, R.id.food_list_item_name,
 				R.id.food_list_item_price, items);
 			lv.setAdapter(listAdapter);
 			listAdapter.notifyDataSetChanged();
 			lv.setVisibility(View.VISIBLE);
-			sp.setVisibility(View.GONE);
+			sp.setVisibility(View.GONE);*/
 		}
 		@Override
 		protected Menu doInBackground(Void... params) {
-			Menu menu = null;
+			//read from sharedPref
+			getPreferences();
 			// TODO Auto-generated method stub
 			try{
 				s = new Socket("130.203.182.82", 4322);
@@ -98,6 +139,9 @@ public class FoodListFragment extends Fragment {
 				s.close();
 			}
 			catch(Exception e){
+				if(menu != null){
+					displayFoodMenuListAdapter(menu);
+				}
 				Log.d("communication",e.getMessage());
 			}
 			return menu;
