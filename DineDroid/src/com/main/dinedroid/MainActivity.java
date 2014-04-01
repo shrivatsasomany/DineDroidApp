@@ -3,21 +3,15 @@ package com.main.dinedroid;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 
 import android.app.ActionBar;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.FrameLayout;
-
-import com.main.dinedroid.customclasses.FoodMenuListAdapter;
-import com.main.dinedroid.menu.FoodItem;
 
 //import com.main.dinedroid.menu.Menu;
 

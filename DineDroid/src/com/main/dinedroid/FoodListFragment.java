@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
@@ -17,9 +18,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.main.dinedroid.customclasses.FoodMenuListAdapter;
 import com.main.dinedroid.menu.FoodItem;
@@ -42,16 +46,46 @@ public class FoodListFragment extends Fragment {
     private Editor prefEditor;
     private Menu menu;
     private Gson gson;
+    private FoodItem selectedItem;
     private final String MENU_OBJECT = "Menu_object";
+    private ListSelectionListener mListener = null;
+    
+    public interface ListSelectionListener {
+		public void onListSelection(FoodItem item);
+	}
+
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+
+		try {
+			mListener = (ListSelectionListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ " must implement Poop");
+		}
+	}
+    
+
+	public void onListItemClick(FoodMenuListAdapter adapter, View v, int pos, long id) {
+		selectedItem = (FoodItem) adapter.getItem(pos);
+		mListener.onListSelection(selectedItem);
+		
+	}
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+    
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
+		sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		prefEditor = sharedPref.edit();
+		getPreferences();
     	downloadMenu();
         rootView = inflater.inflate(R.layout.fragment_food_list, container, false);
 
@@ -65,12 +99,21 @@ public class FoodListFragment extends Fragment {
 
 		lv = (ListView)rootView.findViewById(R.id.fragment_food_list_listview);
 		lv.setVisibility(View.INVISIBLE);
+		
+		lv.setOnItemClickListener(new OnItemClickListener()
+		{
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				// TODO Auto-generated method stub
+				onListItemClick(listAdapter, view, position, id);
+			}
+		});
 
 		sp = (ProgressBar)rootView.findViewById(R.id.fragment_food_list_spinner);
 
-		sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		prefEditor = sharedPref.edit();
-		getPreferences();
+
         return rootView;
     }
     
@@ -111,8 +154,15 @@ public class FoodListFragment extends Fragment {
 		}
 		@Override
 		protected void onPostExecute(Menu result){
-			displayFoodMenuListAdapter(result);
-			savePreferences(result);
+			if(result != null)
+			{
+				displayFoodMenuListAdapter(result);
+				savePreferences(result);
+			}
+			else
+			{
+				Toast.makeText(getActivity(), "Error downloading menu!", Toast.LENGTH_LONG).show();
+			}
 			/*items = result.getItems();
 			listAdapter = new FoodMenuListAdapter(getActivity(),
 				R.layout.food_list_item, R.id.food_list_item_name,
@@ -139,9 +189,7 @@ public class FoodListFragment extends Fragment {
 				s.close();
 			}
 			catch(Exception e){
-				if(menu != null){
-					displayFoodMenuListAdapter(menu);
-				}
+
 				Log.d("communication",e.getMessage());
 			}
 			return menu;
