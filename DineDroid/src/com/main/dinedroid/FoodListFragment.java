@@ -87,7 +87,7 @@ public class FoodListFragment extends Fragment {
 			Menu menu = null;
 			// TODO Auto-generated method stub
 			try{
-				s = new Socket("75.102.94.85", 4322);
+				s = new Socket("130.203.182.82", 4322);
 				out = new ObjectOutputStream(s.getOutputStream());
 				out.writeObject("Menu||Get_Menu");
 				in = new ObjectInputStream(s.getInputStream());
