@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -89,9 +90,10 @@ public class MainActivity extends FragmentActivity implements
 	}
 	
 	@Override
-	public void onDetailListSelection(FoodItem item, int counter) {
+	public void onDetailListSelection(FoodItem item) {
 		// TODO Auto-generated method stub
-		if (counter > 1)
+		
+		if (item != null)
 		{
 			detail_fragment.populateList(item);
 		}

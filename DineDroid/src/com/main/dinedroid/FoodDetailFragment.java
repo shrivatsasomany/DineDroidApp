@@ -27,20 +27,18 @@ public class FoodDetailFragment extends Fragment {
 	private FoodMenuListAdapter listAdapter;
 	private FoodItem selectedItem;
 	private FoodItem passedItem;
-	private int crumbCounter = 1;
 
 	private float alpha = (float) 0.3;
 	private DetailListSelectionListener mListener;
 
 	public interface DetailListSelectionListener {
-		public void onDetailListSelection(FoodItem item, int counter);
+		public void onDetailListSelection(FoodItem item);
 	}
 
 	public void onListItemClick(FoodMenuListAdapter adapter, View v, int pos,
 			long id) {
 		selectedItem = (FoodItem) adapter.getItem(pos);
-		++crumbCounter;
-		mListener.onDetailListSelection(selectedItem, crumbCounter);
+		mListener.onDetailListSelection(selectedItem);
 	}
 
 	/**
@@ -114,14 +112,13 @@ public class FoodDetailFragment extends Fragment {
 	}
 
 	public void backToParent() {
-		if (crumbCounter > 1) {
-			passedItem = passedItem.getParent();
-			mListener.onDetailListSelection(passedItem, crumbCounter);
-			--crumbCounter;
-		} else {
+		passedItem = passedItem.getParent();
+		if (passedItem == null) {		
 			categories.setVisibility(View.INVISIBLE);
 			background.setAlpha(new Float(1));
 		}
+		mListener.onDetailListSelection(passedItem);
+
 	}
 
 }
