@@ -13,6 +13,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.main.dinedroid.customclasses.FoodMenuListAdapter;
 import com.main.dinedroid.menu.FoodItem;
@@ -38,7 +39,15 @@ public class FoodDetailFragment extends Fragment {
 	public void onListItemClick(FoodMenuListAdapter adapter, View v, int pos,
 			long id) {
 		selectedItem = (FoodItem) adapter.getItem(pos);
-		mListener.onDetailListSelection(selectedItem);
+		if(selectedItem.isCategory())
+		{
+			mListener.onDetailListSelection(selectedItem);
+		}
+		else
+		{
+			
+		}
+
 	}
 
 	/**
@@ -96,25 +105,45 @@ public class FoodDetailFragment extends Fragment {
 				backToParent();
 			}
 		});
+		backButton.setVisibility(View.GONE);
 		return rootView;
+	}
+	
+	public void clearFragment()
+	{
+		if(listAdapter!=null)
+		{
+			listAdapter.clear();
+			backButton.setVisibility(View.GONE);
+		}
 	}
 
 	public void populateList(FoodItem item) {
 		categories.setVisibility(View.VISIBLE);
+		backButton.setVisibility(View.VISIBLE);
 		passedItem = item;
 		Log.d("FoodItem", "Items size: " + item.getItems().size());
-		listAdapter = new FoodMenuListAdapter(getActivity(),
-				R.layout.food_list_item, R.id.food_list_item_name,
-				R.id.food_list_item_price, item.getItems());
-		categories.setAdapter(listAdapter);
-		listAdapter.notifyDataSetChanged();
-		background.setAlpha(alpha);
+		if(item.getItems().size()!=0)
+		{
+			listAdapter = new FoodMenuListAdapter(getActivity(),
+					R.layout.food_list_item, R.id.food_list_item_name,
+					R.id.food_list_item_price, item.getItems());
+			categories.setAdapter(listAdapter);
+			listAdapter.notifyDataSetChanged();
+			background.setAlpha(alpha);
+		}
+		else
+		{
+			Toast.makeText(getActivity(), "Sorry, there are no items available to order", Toast.LENGTH_SHORT).show();
+			mListener.onDetailListSelection(null);
+			clearFragment();
+		}
 	}
 
 	public void backToParent() {
 		passedItem = passedItem.getParent();
 		if (passedItem == null) {		
-			categories.setVisibility(View.INVISIBLE);
+			clearFragment();
 			background.setAlpha(new Float(1));
 		}
 		mListener.onDetailListSelection(passedItem);

@@ -17,15 +17,22 @@
     <ListView
         android:id="@+id/fragment_food_detail_listview"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/fragment_food_detail_back_button"
         android:layout_centerInParent="false" >
     </ListView>
 
     <Button
         android:id="@+id/fragment_food_detail_back_button"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
+        android:padding="5dp"
+        android:gravity="center"
         android:layout_height="wrap_content"
-        android:layout_below="@id/fragment_food_detail_listview"
-        android:text="Go Back" />
+        android:textColor="@android:color/holo_orange_dark"
+        style="@android:style/Widget.Holo.Button.Borderless"
+        android:layout_alignParentBottom="true"
+		android:layout_marginLeft="10px"
+        android:background="@drawable/back_button_selector"
+        android:text="\u2190 Previous Category" />
    
 </RelativeLayout>

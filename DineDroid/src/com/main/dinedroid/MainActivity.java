@@ -14,15 +14,17 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 //import com.main.dinedroid.menu.Menu;
 
 public class MainActivity extends FragmentActivity implements
-		MenuListSelectionListener, DetailListSelectionListener {
+MenuListSelectionListener, DetailListSelectionListener {
 
 	private Socket s;
 	private ObjectInputStream in;
@@ -69,8 +71,11 @@ public class MainActivity extends FragmentActivity implements
 
 	public void loadMenu(View v) {
 		list.setVisibility(View.VISIBLE);
-		detailShadow.setVisibility(View.VISIBLE);
-		rightShadowEnabled = true;
+		highlightMenuFragment();
+		detail_fragment.clearFragment();
+
+
+
 		FragmentTransaction ft = fm.beginTransaction();
 		if (!menu_fragment.isAdded()) {
 			ft.add(R.id.list_frame_layout, menu_fragment);
@@ -85,39 +90,33 @@ public class MainActivity extends FragmentActivity implements
 	public void onMenuListSelection(FoodItem item) {
 		// TODO Auto-generated method stub
 		detail_fragment.populateList(item);
-		flipShadow();
-
+		highlightDetailFragment();
 	}
-	
+
 	@Override
 	public void onDetailListSelection(FoodItem item) {
 		// TODO Auto-generated method stub
-		
+
 		if (item != null)
 		{
 			detail_fragment.populateList(item);
 		}
 		else
 		{
-			flipShadow();
+			highlightMenuFragment();
 		}
 
 	}
-	
-	public void flipShadow()
+
+	public void highlightMenuFragment()
 	{
-		if(rightShadowEnabled)
-		{
-			detailShadow.setVisibility(View.GONE);
-			menuShadow.setVisibility(View.VISIBLE);
-			rightShadowEnabled = false;
-		}
-		else
-		{
-			detailShadow.setVisibility(View.VISIBLE);
-			menuShadow.setVisibility(View.GONE);
-			rightShadowEnabled = true;
-		}
+		detailShadow.setVisibility(View.VISIBLE);
+		menuShadow.setVisibility(View.GONE);
+	}
+	public void highlightDetailFragment()
+	{
+		detailShadow.setVisibility(View.GONE);
+		menuShadow.setVisibility(View.VISIBLE);
 	}
 
 
