@@ -2,6 +2,9 @@ package com.main.dinedroid;
 
 import com.google.gson.Gson;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -45,7 +48,7 @@ public class FoodListFragment extends Fragment {
     private View rootView;
     private SharedPreferences sharedPref;
     private Editor prefEditor;
-    private Menu menu;
+    private Menu menu = null;
     private Gson gson;
     private FoodItem selectedItem;
     private final String MENU_OBJECT = "Menu_object";
@@ -87,19 +90,10 @@ public class FoodListFragment extends Fragment {
             Bundle savedInstanceState) {
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		prefEditor = sharedPref.edit();
-		getPreferences();
+		//getPreferences();
+		loadMenu();
     	downloadMenu();
         rootView = inflater.inflate(R.layout.fragment_food_list, container, false);
-
-        /*ArrayList<FoodItem> items = new ArrayList<FoodItem>();
-        items.add(new FoodItem(1000, "Pizza", 10, false));
-        items.add(new FoodItem(2000, "Pasta", 15, false));
-        items.add(new FoodItem(5000, "Sandwiches", 0, true));*/
-		/*FoodMenuListAdapter adapter = new FoodMenuListAdapter(getActivity(),
-				R.layout.food_list_item, R.id.food_list_item_name,
-				R.id.food_list_item_price, items);*/
-
-
 		lv = (ListView)rootView.findViewById(R.id.fragment_food_list_listview);
 		lv.setVisibility(View.INVISIBLE);
 		
@@ -115,8 +109,6 @@ public class FoodListFragment extends Fragment {
 		});
 
 		sp = (ProgressBar)rootView.findViewById(R.id.fragment_food_list_spinner);
-
-
         return rootView;
     }
     
@@ -128,14 +120,43 @@ public class FoodListFragment extends Fragment {
 		batFactor=(BackgroundAsyncTask) new BackgroundAsyncTask().execute();
     }
     
+    public boolean saveMenu() {
+		try {
+			ObjectOutputStream os = new ObjectOutputStream(
+					new FileOutputStream("menu.dat"));
+			os.writeObject(menu);
+			os.close();
+			return true;
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public boolean loadMenu() {
+		try {
+			ObjectInputStream is = new ObjectInputStream(
+					new FileInputStream("menu.dat"));
+			menu = (Menu) is.readObject();
+			is.close();
+			return true;
+
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
     public void getPreferences(){
-		gson = new Gson();
+		//gson = new Gson();
         //String json = sharedPref.getString(MENU_OBJECT, "");
        // menu = gson.fromJson(json, Menu.class);
     }
     
     public void savePreferences(Menu result){
-    	gson = new Gson();
+    	//gson = new Gson();
         //String json = gson.toJson(result);
         //prefEditor.putString(MENU_OBJECT, json);
         //prefEditor.commit();
@@ -159,6 +180,7 @@ public class FoodListFragment extends Fragment {
 		protected void onPostExecute(Menu result){
 			if(result != null)
 			{
+				saveMenu();
 				displayFoodMenuListAdapter(result);
 				//savePreferences(result);
 			}
@@ -179,6 +201,7 @@ public class FoodListFragment extends Fragment {
 		protected Menu doInBackground(Void... params) {
 			//read from sharedPref
 			//getPreferences();
+			loadMenu();
 			// TODO Auto-generated method stub
 			try{
 				s = new Socket("130.203.182.82", 4322);
@@ -192,7 +215,6 @@ public class FoodListFragment extends Fragment {
 				s.close();
 			}
 			catch(Exception e){
-
 				Log.d("communication",e.getMessage());
 			}
 			return menu;
