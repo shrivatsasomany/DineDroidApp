@@ -1,14 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:minHeight="200dp"
+    android:minWidth="200dp" >
 
-    <NumberPicker
-        android:id="@+id/timePicker1"
+    <LinearLayout
+        android:id="@+id/add_food_dialog_quantity_pickerlayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="41dp" />
+        android:layout_marginLeft="50dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quantity" />
+
+        <TextView
+            android:id="@+id/add_food_dialog_quantity_textviewplus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back_button_selector"
+            android:gravity="center"
+            android:text="+"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/add_food_dialog_quantity_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
+            android:maxLength="2"
+            android:ems="2"
+            android:inputType="number"
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@+id/add_food_dialog_quantity_textviewminus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back_button_selector"
+            android:gravity="center"
+            android:text="-"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_margin="10dp"
+        android:layout_toRightOf="@id/add_food_dialog_quantity_pickerlayout"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/add_food_dialog_quantity_extrastext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Extras" />
+
+        <ListView
+            android:id="@+id/add_food_dialog_quantity_extraslist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+        </ListView>
+    </LinearLayout>
 
 </RelativeLayout>

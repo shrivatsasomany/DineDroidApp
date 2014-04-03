@@ -31,7 +31,6 @@
         android:textColor="@android:color/holo_orange_dark"
         style="@android:style/Widget.Holo.Button.Borderless"
         android:layout_alignParentBottom="true"
-		android:layout_marginLeft="10px"
         android:background="@drawable/back_button_selector"
         android:text="\u2190 Previous Category" />
    

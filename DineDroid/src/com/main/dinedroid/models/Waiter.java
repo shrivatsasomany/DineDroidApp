@@ -5,13 +5,15 @@ import java.util.ArrayList;
 
 public class Waiter implements Serializable {
 	private int id;
-	private String name;
+	private String fname;
+	private String lname;
 	private ArrayList<Table> tables; 
 	private ArrayList<Table> hailQueue;
 	
-	public Waiter(int id, String name) {
+	public Waiter(int id, String fname, String lname) {
 		this.id = id;
-		this.name = name;
+		this.fname = fname;
+		this.lname = lname;
 		this.tables = new ArrayList<Table>();
 		this.hailQueue = new ArrayList<Table>();
 	}
@@ -24,12 +26,20 @@ public class Waiter implements Serializable {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getFName() {
+		return fname;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFName(String fname) {
+		this.fname = fname;
+	}
+	
+	public String getLName() {
+		return lname;
+	}
+
+	public void setLName(String fname) {
+		this.lname = fname;
 	}
 
 	public ArrayList<Table> getTables() {
@@ -107,7 +117,7 @@ public class Waiter implements Serializable {
 	
 	public String toString()
 	{
-		return "ID: "+id+"\tName: "+name;
+		return "ID: "+id+"\tName: "+fname+ " "+lname;
 	}
 	
 }
