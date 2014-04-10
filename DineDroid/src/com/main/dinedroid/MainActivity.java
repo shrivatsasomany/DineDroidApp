@@ -4,22 +4,24 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import com.main.dinedroid.FoodDetailFragment.DetailListSelectionListener;
-import com.main.dinedroid.FoodListFragment.MenuListSelectionListener;
-import com.main.dinedroid.menu.FoodItem;
-
+import jim.h.common.android.lib.zxing.config.ZXingLibConfig;
+import jim.h.common.android.lib.zxing.integrator.IntentIntegrator;
+import jim.h.common.android.lib.zxing.integrator.IntentResult;
 import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.main.dinedroid.FoodDetailFragment.DetailListSelectionListener;
+import com.main.dinedroid.FoodListFragment.MenuListSelectionListener;
+import com.main.dinedroid.menu.FoodItem;
 
 //import com.main.dinedroid.menu.Menu;
 
@@ -37,11 +39,16 @@ MenuListSelectionListener, DetailListSelectionListener {
 	private ImageView detailShadow;
 	private ImageView menuShadow;
 	private boolean rightShadowEnabled = false;
+	private ZXingLibConfig zxingLibConfig;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		zxingLibConfig = new ZXingLibConfig();
+
 		fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
 		list = (FrameLayout) this.findViewById(R.id.list_frame_layout);
@@ -69,6 +76,11 @@ MenuListSelectionListener, DetailListSelectionListener {
 		return true;
 	}
 
+	public void loadCart(View v)
+	{
+        IntentIntegrator.initiateScan(MainActivity.this, zxingLibConfig);
+	}
+
 	public void loadMenu(View v) {
 		list.setVisibility(View.VISIBLE);
 		highlightMenuFragment();
@@ -85,6 +97,25 @@ MenuListSelectionListener, DetailListSelectionListener {
 		}
 
 	}
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case IntentIntegrator.REQUEST_CODE: 
+                IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode,
+                        resultCode, data);
+                if (scanResult == null) {
+                    return;
+                }
+                final String result = scanResult.getContents();
+                if (result != null) {
+                    Toast.makeText(getApplicationContext(), "SCAN: "+result, Toast.LENGTH_LONG).show();
+                }
+                break;
+            default:
+        }
+    }
 
 	@Override
 	public void onMenuListSelection(FoodItem item) {

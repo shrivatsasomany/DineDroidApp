@@ -33,7 +33,7 @@
         android:layout_height="fill_parent"
         android:background="@null"
         android:paddingRight="8dp"
-        android:onClick="loadMenu"
+        android:onClick="loadCart"
         android:layout_alignParentRight="true"
         android:src="@drawable/menu_cart" />
 
