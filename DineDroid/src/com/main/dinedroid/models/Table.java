@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import com.main.dinedroid.menu.FoodItem;
 
-public class Table implements Serializable{
+public class Table implements Serializable {
 	
 	private Integer id;
 	private Waiter waiter;
@@ -102,6 +102,9 @@ public class Table implements Serializable{
 		return true;
 	}
 	
-	
+	public String toString()
+	{
+		return "Table Number: " + id;
+	}
 	
 }
