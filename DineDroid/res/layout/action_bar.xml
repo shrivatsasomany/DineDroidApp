@@ -4,37 +4,112 @@
     android:layout_height="match_parent"
     android:orientation="horizontal" >
 
-    <ImageButton
-        android:id="@+id/menu_load"
+    <LinearLayout
+        android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_centerVertical="true"
-        android:background="@null"
-        android:onClick="loadMenu"
-        android:paddingLeft="8dp"
-        android:paddingRight="2dp"
-        android:src="@drawable/load_menu" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/linearLayout3"
+        android:onClick="loadMenu" >
 
-    <TextView
-        android:id="@+id/menu_text"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_centerVertical="true"
-        android:background="@null"
-        android:gravity="center"
-        android:paddingRight="50dp"
-        android:layout_toRightOf="@id/menu_load"
-        android:text="Menu"
-        android:textColor="@android:color/holo_orange_dark" />
+        <ImageButton
+            android:id="@+id/menu_load"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:background="@null"
+            android:paddingLeft="8dp"
+            android:paddingRight="2dp"
+            android:src="@drawable/load_menu" />
 
-    <ImageButton
-        android:id="@+id/menu_cart"
+        <TextView
+            android:id="@+id/menu_text"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:background="@null"
+            android:gravity="center"
+            android:text="Menu"
+            android:textColor="@android:color/holo_orange_dark" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:background="@null"
-        android:paddingRight="8dp"
-        android:onClick="loadCart"
+        android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:src="@drawable/menu_cart" />
+        android:layout_centerVertical="true"
+        android:layout_marginRight="15dp"
+        android:onClick="loadCart" >
+
+        <ImageButton
+            android:id="@+id/menu_cart"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:background="@null"
+            android:paddingLeft="8dp"
+            android:paddingRight="2dp"
+            android:src="@drawable/menu_cart" />
+
+        <TextView
+            android:id="@+id/cart_text"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="2dp"
+            android:background="@null"
+            android:gravity="center"
+            android:text="Order"
+            android:textColor="@android:color/holo_orange_dark" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/qr_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/table_layout"
+        android:layout_toLeftOf="@+id/linearLayout3"
+        android:onClick="startScan" >
+
+        <ImageButton
+            android:id="@+id/qr_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:background="@null"
+            android:paddingLeft="8dp"
+            android:paddingRight="2dp"
+            android:src="@drawable/qr_icon" />
+
+        <TextView
+            android:id="@+id/qr_text"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="2dp"
+            android:background="@null"
+            android:gravity="center"
+            android:text="Scan Code"
+            android:textColor="@android:color/holo_orange_dark" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/table_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/linearLayout3"
+        android:layout_toLeftOf="@+id/qr_layout" >
+
+        <ImageView
+            android:id="@+id/table_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/table_icon" />
+
+        <TextView
+            android:id="@+id/table_text"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="2dp"
+            android:background="@null"
+            android:gravity="center"
+            android:text="Temp. Table"
+            android:textColor="@android:color/holo_orange_dark" />
+    </LinearLayout>
 
 </RelativeLayout>

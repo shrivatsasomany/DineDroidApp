@@ -76,9 +76,14 @@ MenuListSelectionListener, DetailListSelectionListener {
 		return true;
 	}
 
-	public void loadCart(View v)
+	public void startScan(View v)
 	{
         IntentIntegrator.initiateScan(MainActivity.this, zxingLibConfig);
+	}
+	
+	public void loadCart(View v)
+	{
+		
 	}
 
 	public void loadMenu(View v) {
@@ -111,6 +116,10 @@ MenuListSelectionListener, DetailListSelectionListener {
                 final String result = scanResult.getContents();
                 if (result != null) {
                     Toast.makeText(getApplicationContext(), "SCAN: "+result, Toast.LENGTH_LONG).show();
+                    /* 
+                     * AsyncTask to open table with QR code ID 
+                     * Hide QR Code and Temp table layouts
+                     */
                 }
                 break;
             default:
