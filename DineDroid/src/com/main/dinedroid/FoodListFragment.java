@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
@@ -122,9 +123,9 @@ public class FoodListFragment extends Fragment {
     
     public boolean saveMenu() {
 		try {
-			ObjectOutputStream os = new ObjectOutputStream(
-					new FileOutputStream("menu.dat"));
-			os.writeObject(menu);
+			FileOutputStream fos = getActivity().openFileOutput("menu.dat", Context.MODE_PRIVATE);
+			ObjectOutputStream os = new ObjectOutputStream(fos);
+			os.writeObject(this);
 			os.close();
 			return true;
 
@@ -137,8 +138,9 @@ public class FoodListFragment extends Fragment {
 
 	public boolean loadMenu() {
 		try {
+			FileInputStream fos = getActivity().openFileInput("menu.dat");
 			ObjectInputStream is = new ObjectInputStream(
-					new FileInputStream("menu.dat"));
+					fos);
 			menu = (Menu) is.readObject();
 			is.close();
 			return true;
