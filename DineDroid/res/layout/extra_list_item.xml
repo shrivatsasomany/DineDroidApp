@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal" >
+
+    <CheckBox
+        android:id="@+id/extra_list_item_check_box"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:focusable="false"
+        android:layout_weight="85"
+        android:text="" />
+
+    <com.main.dinedroid.customclasses.ScrollingTextView
+        android:id="@+id/extra_list_item_name"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="32"
+        android:gravity="center|left"
+        android:text="ScrollingTextView" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="93" >
+
+        <ImageView
+            android:id="@+id/extra_list_item_separator"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:paddingBottom="10dp"
+            android:layout_gravity="center"
+            android:paddingTop="10dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/food_list_separator" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/extra_list_item_price"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="75"
+        android:gravity="center"
+        android:text="TextView" />
+
+</LinearLayout>

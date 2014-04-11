@@ -77,6 +77,13 @@ public class Waiter implements Serializable {
 	
 	public boolean addHail(Table table)
 	{
+		for(int i = 0; i < hailQueue.size(); ++i)
+		{
+			if(hailQueue.get(i).getId() == table.getId())
+			{
+				return false;
+			}
+		}
 		return (this.hailQueue.add(table));
 	}
 	

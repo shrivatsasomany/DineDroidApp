@@ -2,7 +2,10 @@ package com.main.dinedroid;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -16,16 +19,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.main.dinedroid.customclasses.ExtraMenuListAdapter;
 import com.main.dinedroid.customclasses.FoodMenuListAdapter;
 import com.main.dinedroid.menu.FoodItem;
 
@@ -37,15 +41,19 @@ public class FoodDetailFragment extends Fragment {
 	private ImageView background;
 	private Button backButton;
 	private FoodMenuListAdapter listAdapter;
-	private FoodMenuListAdapter extrasListAdapter;
+	private ExtraMenuListAdapter extrasListAdapter;
 	private FoodItem selectedItem;
 	private FoodItem passedItem;
 	private int quantity_counter = 1;
 
 
 	private float alpha = (float) 0.3;
-	private DetailListSelectionListener mListener;
+	private DetailListSelectionListener mDetailListener;
+	private FoodItemSelectionListener mFoodListener;
 
+	public interface FoodItemSelectionListener {
+		public void onFoodItemSelected(FoodItem item);
+	}
 	public interface DetailListSelectionListener {
 		public void onDetailListSelection(FoodItem item);
 	}
@@ -54,7 +62,7 @@ public class FoodDetailFragment extends Fragment {
 			long id) {
 		selectedItem = (FoodItem) adapter.getItem(pos);
 		if (selectedItem.isCategory()) {
-			mListener.onDetailListSelection(selectedItem);
+			mDetailListener.onDetailListSelection(selectedItem);
 		} else {
 			showFoodDialog(selectedItem);
 		}
@@ -72,17 +80,18 @@ public class FoodDetailFragment extends Fragment {
 		super.onAttach(activity);
 
 		try {
-			mListener = (DetailListSelectionListener) activity;
+			mDetailListener = (DetailListSelectionListener) activity;
+			mFoodListener = (FoodItemSelectionListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
-					+ " must implement Poop");
+					+ " must implement listeners!");
 		}
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+        setRetainInstance(true);
 	}
 
 	@Override
@@ -142,7 +151,7 @@ public class FoodDetailFragment extends Fragment {
 			Toast.makeText(getActivity(),
 					"Sorry, there are no items available to order",
 					Toast.LENGTH_SHORT).show();
-			mListener.onDetailListSelection(null);
+			mDetailListener.onDetailListSelection(null);
 			clearFragment();
 		}
 	}
@@ -153,11 +162,14 @@ public class FoodDetailFragment extends Fragment {
 			clearFragment();
 			background.setAlpha(new Float(1));
 		}
-		mListener.onDetailListSelection(passedItem);
+		mDetailListener.onDetailListSelection(passedItem);
 
 	}
 
 	public void showFoodDialog(FoodItem item) {
+		final HashMap<Integer, FoodItem> extrasList = new HashMap<Integer, FoodItem>();
+		final EditText notes = new EditText(getActivity());
+		final FoodItem temp = new FoodItem(item.getID(), item.getName(), item.getPrice(), false);
 		AlertDialog.Builder customDialog = new AlertDialog.Builder(
 				getActivity());
 		customDialog.setPositiveButton("Add", new DialogInterface.OnClickListener() {
@@ -165,6 +177,19 @@ public class FoodDetailFragment extends Fragment {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
+				temp.setQuantity(quantity_counter);
+				Iterator it = extrasList.entrySet().iterator();
+				while(it.hasNext())
+				{
+					Map.Entry pairs = (Map.Entry)it.next();
+					temp.addExtra((FoodItem) pairs.getValue());
+				}
+				String itemNotes = notes.getText().toString();
+				if(!itemNotes.equals(""))
+				{
+					temp.addNotes(itemNotes);
+				}
+				mFoodListener.onFoodItemSelected(temp);
 				dialog.dismiss();
 			}
 		});
@@ -195,15 +220,27 @@ public class FoodDetailFragment extends Fragment {
 		quantity.clearFocus();
 		quantity.setText("1");
 		
-		extrasListAdapter = new FoodMenuListAdapter(getActivity(), R.layout.food_list_item, R.id.food_list_item_name, R.id.food_list_item_price, item.getExtras());
+		extrasListAdapter = new ExtraMenuListAdapter(getActivity(), R.layout.extra_list_item, R.id.extra_list_item_name, R.id.extra_list_item_price,R.id.extra_list_item_check_box, item.getExtras());
 		
 		final ListView extras = (ListView)view.findViewById(R.id.add_food_dialog_quantity_extraslist);
+		extras.addFooterView(notes);
 		extras.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {				
-				Toast.makeText(getActivity(), ""+extrasListAdapter.getItem(position), Toast.LENGTH_SHORT).show();
+				FoodItem selectedExtra = (FoodItem) extrasListAdapter.getItem(position);
+				CheckBox x = (CheckBox)view.findViewById(R.id.extra_list_item_check_box);
+				if(x.isChecked())
+				{
+					x.setChecked(false);
+					extrasList.remove(selectedExtra.getID());
+				}
+				else
+				{
+					x.setChecked(true);
+					extrasList.put(selectedExtra.getID(), selectedExtra);
+				}
 
 			}
 		});
