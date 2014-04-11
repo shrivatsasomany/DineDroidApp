@@ -4,6 +4,9 @@
     <string name="app_name">DineDroid</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="load_menu">Load_menu</string>
-    
+    <string name="server_address_description">Set Server Address</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
