@@ -82,13 +82,13 @@ MenuListSelectionListener, DetailListSelectionListener, FoodItemSelectionListene
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowHomeEnabled(false);
 		actionBar.setDisplayShowTitleEnabled(false);
-		// getMenuInflater().inflate(R.menu.activity_main, menu);
-		View mActionBar = getLayoutInflater()
-				.inflate(R.layout.action_bar, null);
-		actionBar.setCustomView(mActionBar);
-		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-		scanLayout = (LinearLayout)mActionBar.findViewById(R.id.qr_layout);
-		tempTableLayout = (LinearLayout)mActionBar.findViewById(R.id.table_layout);
+		getMenuInflater().inflate(R.menu.activity_main, menu);
+//		View mActionBar = getLayoutInflater()
+//				.inflate(R.layout.action_bar, null);
+//		actionBar.setCustomView(mActionBar);
+//		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+//		scanLayout = (LinearLayout)mActionBar.findViewById(R.id.qr_layout);
+//		tempTableLayout = (LinearLayout)mActionBar.findViewById(R.id.table_layout);
 		return true;
 	}
 
