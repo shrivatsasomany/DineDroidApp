@@ -1,8 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
     <item
         android:id="@+id/load_menu"
-        android:title="@string/load_menu"
-        android:showAsAction="ifRoom"/>
+        android:icon="@drawable/load_menu"
+        android:showAsAction="ifRoom|withText"
+        android:title="Menu"/>
+    <item
+        android:id="@+id/qr_icon"
+        android:icon="@drawable/qr_icon"
+        android:showAsAction="ifRoom|withText"
+        android:title="Scan Code">
+    </item>
+    <item
+        android:id="@+id/temp_icon"
+        android:icon="@drawable/table_icon"
+        android:showAsAction="ifRoom|withText"
+        android:title="Temp Table">
+    </item>
+    <item
+        android:id="@+id/order_icon"
+        android:icon="@drawable/menu_cart"
+        android:showAsAction="ifRoom|withText"
+        android:title="Order">
+    </item>
 
 </menu>
