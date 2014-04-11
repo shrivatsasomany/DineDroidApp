@@ -7,14 +7,14 @@ import com.main.dinedroid.menu.FoodItem;
 
 public class Order implements Serializable {
 	
-	private Table orderTable;
+	private int tableId;
 	private ArrayList<FoodItem> order;
 	private String orderNotes;
 	
 	public Order(ArrayList<FoodItem> order)
 	{
 		this.order = order;
-		this.orderTable = null;
+		
 	}
 	
 	public ArrayList<FoodItem> getOrder()
@@ -27,14 +27,14 @@ public class Order implements Serializable {
 		this.order = order;
 	}
 	
-	public Table getOrderTable()
+	public int getOrderTable()
 	{
-		return orderTable;
+		return tableId;
 	}
 	
-	public void setOrderTable(Table orderTable)
+	public void setOrderTable(int tableId)
 	{
-		this.orderTable = orderTable;
+		this.tableId = tableId;
 	}
 	
 	public void setOrderNotes(String orderNotes)
@@ -49,7 +49,7 @@ public class Order implements Serializable {
 	
 	public String toString()
 	{
-		return "Table: "+orderTable.getId()+"";
+		return "Table: "+tableId;
 	}
 	
 	/**
@@ -61,12 +61,12 @@ public class Order implements Serializable {
 		String temp;
 		if(order.size() == 0)
 		{
-			temp = "Table: "+orderTable.getId()+"\nNo Order";
+			temp = "Table: "+tableId+"\nNo Order";
 			return temp;
 		}
 		else
 		{
-			temp = "Table: "+orderTable.getId()+"\nOrder:\n";
+			temp = "Table: "+tableId+"\nOrder:\n";
 			for(int i = 0; i < order.size(); ++i)
 			{
 				temp += order.get(i).displayString() + "\n";

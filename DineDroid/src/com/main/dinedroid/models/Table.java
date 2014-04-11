@@ -104,7 +104,12 @@ public class Table implements Serializable {
 	
 	public String toString()
 	{
-		return "Table Number: " + id;
+		String occupied = "Inactive";
+		if(isOccupied)
+		{
+			occupied = "Active";
+		}
+		return "Table Number: " + id + " - " + occupied;
 	}
 	
 }
