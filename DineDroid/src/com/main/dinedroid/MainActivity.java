@@ -10,8 +10,10 @@ import jim.h.common.android.lib.zxing.integrator.IntentIntegrator;
 import jim.h.common.android.lib.zxing.integrator.IntentResult;
 import android.app.ActionBar;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -52,6 +54,9 @@ MenuListSelectionListener, DetailListSelectionListener, FoodItemSelectionListene
 	private OpenTableAysncTask tableBG;
 	private OpenTempTableAsyncTask tempBG;
 	private SendOrderAsyncTask orderBG;
+	private final String SERVER_ADDRESS = "ServerAddress";
+	private String server_address;
+	private SharedPreferences spref;
 	
 	private ArrayList<FoodItem> order = new ArrayList<FoodItem>();
 
@@ -60,9 +65,9 @@ MenuListSelectionListener, DetailListSelectionListener, FoodItemSelectionListene
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		getPreferences();
 		zxingLibConfig = new ZXingLibConfig();
-
+		
 		fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
 		list = (FrameLayout) this.findViewById(R.id.list_frame_layout);
@@ -91,7 +96,7 @@ MenuListSelectionListener, DetailListSelectionListener, FoodItemSelectionListene
 //		tempTableLayout = (LinearLayout)mActionBar.findViewById(R.id.table_layout);
 		return true;
 	}
-
+	
 	public void startScan(View v)
 	{
 		IntentIntegrator.initiateScan(MainActivity.this, zxingLibConfig);
@@ -131,6 +136,10 @@ MenuListSelectionListener, DetailListSelectionListener, FoodItemSelectionListene
 		}
 
 	}
+	public void getPreferences(){
+		spref = PreferenceManager.getDefaultSharedPreferences(this);
+		server_address = spref.getString(SERVER_ADDRESS, "10.0.1.14");
+	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -158,8 +167,10 @@ MenuListSelectionListener, DetailListSelectionListener, FoodItemSelectionListene
 				 * Hide QR Code and Temp table layouts
 				 */
 			}
-			break;
 		default:
+			getPreferences();
+			break;
+		
 		}
 	}
 
