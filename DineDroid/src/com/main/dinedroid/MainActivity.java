@@ -19,6 +19,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -30,11 +31,13 @@ import com.main.dinedroid.FoodDetailFragment.FoodItemSelectionListener;
 import com.main.dinedroid.FoodListFragment.MenuListSelectionListener;
 import com.main.dinedroid.menu.FoodItem;
 import com.main.dinedroid.models.Order;
+import com.main.dinedroid.SettingsActivity;
 
 //import com.main.dinedroid.menu.Menu;
 
 public class MainActivity extends FragmentActivity implements
-MenuListSelectionListener, DetailListSelectionListener, FoodItemSelectionListener {
+		MenuListSelectionListener, DetailListSelectionListener,
+		FoodItemSelectionListener {
 
 	private Socket s;
 	private ObjectInputStream in;
@@ -65,6 +68,7 @@ MenuListSelectionListener, DetailListSelectionListener, FoodItemSelectionListene
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		spref = PreferenceManager.getDefaultSharedPreferences(this);
 		getPreferences();
 		zxingLibConfig = new ZXingLibConfig();
 		
@@ -88,44 +92,59 @@ MenuListSelectionListener, DetailListSelectionListener, FoodItemSelectionListene
 		actionBar.setDisplayShowHomeEnabled(false);
 		actionBar.setDisplayShowTitleEnabled(false);
 		getMenuInflater().inflate(R.menu.activity_main, menu);
-//		View mActionBar = getLayoutInflater()
-//				.inflate(R.layout.action_bar, null);
-//		actionBar.setCustomView(mActionBar);
-//		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-//		scanLayout = (LinearLayout)mActionBar.findViewById(R.id.qr_layout);
-//		tempTableLayout = (LinearLayout)mActionBar.findViewById(R.id.table_layout);
+		// View mActionBar = getLayoutInflater()
+		// .inflate(R.layout.action_bar, null);
+		// actionBar.setCustomView(mActionBar);
+		// actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+		// scanLayout = (LinearLayout)mActionBar.findViewById(R.id.qr_layout);
+		// tempTableLayout =
+		// (LinearLayout)mActionBar.findViewById(R.id.table_layout);
 		return true;
 	}
-	
-	public void startScan(View v)
-	{
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.load_menu:
+			loadMenu();
+			return true;
+		case R.id.qr_icon:
+			startScan();
+			return true;
+		case R.id.action_settings:
+			Intent intent1 = new Intent(this,SettingsActivity.class);
+			startActivityForResult(intent1,0);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	public void startScan() {
 		IntentIntegrator.initiateScan(MainActivity.this, zxingLibConfig);
 	}
 
-	public void openTemp(View v)
-	{
-		if(tempBG!=null)
-		{
+	public void openTemp(View v) {
+		if (tempBG != null) {
 			tempBG.cancel(false);
 		}
-		tempBG = (OpenTempTableAsyncTask) new OpenTempTableAsyncTask().execute();
+		tempBG = (OpenTempTableAsyncTask) new OpenTempTableAsyncTask()
+				.execute();
 	}
 
-	public void loadCart(View v)
-	{
-		Toast.makeText(getApplicationContext(), "Order Size: "+order.size(), Toast.LENGTH_SHORT).show();
-		if(orderBG != null)
-		{
+	public void loadCart(View v) {
+		Toast.makeText(getApplicationContext(), "Order Size: " + order.size(),
+				Toast.LENGTH_SHORT).show();
+		if (orderBG != null) {
 			orderBG.cancel(false);
 		}
 		orderBG = (SendOrderAsyncTask) new SendOrderAsyncTask().execute();
 	}
 
-	public void loadMenu(View v) {
+	public void loadMenu() {
 		list.setVisibility(View.VISIBLE);
 		highlightMenuFragment();
 		detail_fragment.clearFragment();
-
 
 		FragmentTransaction ft = fm.beginTransaction();
 		if (!menu_fragment.isAdded()) {
@@ -137,7 +156,6 @@ MenuListSelectionListener, DetailListSelectionListener, FoodItemSelectionListene
 
 	}
 	public void getPreferences(){
-		spref = PreferenceManager.getDefaultSharedPreferences(this);
 		server_address = spref.getString(SERVER_ADDRESS, "10.0.1.14");
 	}
 
@@ -145,26 +163,27 @@ MenuListSelectionListener, DetailListSelectionListener, FoodItemSelectionListene
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (requestCode) {
-		case IntentIntegrator.REQUEST_CODE: 
-			IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode,
-					resultCode, data);
+		case IntentIntegrator.REQUEST_CODE:
+			IntentResult scanResult = IntentIntegrator.parseActivityResult(
+					requestCode, resultCode, data);
 			if (scanResult == null) {
 				return;
 			}
 			final String result = scanResult.getContents();
 			if (result != null) {
-				Toast.makeText(getApplicationContext(), "SCAN: "+result, Toast.LENGTH_LONG).show();
-				tempTableLayout.setVisibility(View.GONE);
-				scanLayout.setVisibility(View.GONE);
+				Toast.makeText(getApplicationContext(), "SCAN: " + result,
+						Toast.LENGTH_LONG).show();
+				// tempTableLayout.setVisibility(View.GONE);
+				// scanLayout.setVisibility(View.GONE);
 				scannedId = result;
-				if(tableBG!=null)
-				{
+				if (tableBG != null) {
 					tableBG.cancel(false);
 				}
-				tableBG = (OpenTableAysncTask) new OpenTableAysncTask().execute();
-				/* 
-				 * AsyncTask to open table with QR code ID 
-				 * Hide QR Code and Temp table layouts
+				tableBG = (OpenTableAysncTask) new OpenTableAysncTask()
+						.execute();
+				/*
+				 * AsyncTask to open table with QR code ID Hide QR Code and Temp
+				 * table layouts
 				 */
 			}
 		default:
@@ -185,12 +204,9 @@ MenuListSelectionListener, DetailListSelectionListener, FoodItemSelectionListene
 	public void onDetailListSelection(FoodItem item) {
 		// TODO Auto-generated method stub
 
-		if (item != null)
-		{
+		if (item != null) {
 			detail_fragment.populateList(item);
-		}
-		else
-		{
+		} else {
 			highlightMenuFragment();
 		}
 
@@ -202,136 +218,134 @@ MenuListSelectionListener, DetailListSelectionListener, FoodItemSelectionListene
 		order.add(item);
 	}
 
-	public void highlightMenuFragment()
-	{
+	public void highlightMenuFragment() {
 		detailShadow.setVisibility(View.VISIBLE);
 		menuShadow.setVisibility(View.GONE);
 	}
-	public void highlightDetailFragment()
-	{
+
+	public void highlightDetailFragment() {
 		detailShadow.setVisibility(View.GONE);
 		menuShadow.setVisibility(View.VISIBLE);
 	}
 
-	public class OpenTableAysncTask extends AsyncTask<Void, Integer, Void>{
+	public class OpenTableAysncTask extends AsyncTask<Void, Integer, Void> {
 		@Override
-		protected void onPreExecute(){
+		protected void onPreExecute() {
 
 		}
+
 		@Override
-		protected void onPostExecute(Void result){
+		protected void onPostExecute(Void result) {
 
 		}
+
 		@Override
 		protected Void doInBackground(Void... params) {
-			//read from sharedPref
-			//getPreferences();
+			// read from sharedPref
+			// getPreferences();
 			// TODO Auto-generated method stub
-			try{
-				s = new Socket("client-75-102-77-24.mobility-cl.psu.edu", 4322);
+			try {
+				s = new Socket(server_address, 4322);
 				out = new ObjectOutputStream(s.getOutputStream());
-				out.writeObject("Table||Open_Table||"+scannedId);
-				//				in = new ObjectInputStream(s.getInputStream());
-				//				
-				//				//display this menu
-				//				in.close();
+				out.writeObject("Table||Open_Table||" + scannedId);
+				// in = new ObjectInputStream(s.getInputStream());
+				//
+				// //display this menu
+				// in.close();
 				out.close();
 				s.close();
-			}
-			catch(Exception e){
-				Log.d("communication",e.getMessage());
+			} catch (Exception e) {
+				Log.d("communication", e.getMessage());
 			}
 			return null;
 		}
 
 	}
 
-	public class OpenTempTableAsyncTask extends AsyncTask<Void, Integer, Integer>{
+	public class OpenTempTableAsyncTask extends
+			AsyncTask<Void, Integer, Integer> {
 		@Override
-		protected void onPreExecute(){
+		protected void onPreExecute() {
 
 		}
+
 		@Override
-		protected void onPostExecute(Integer result){
-			if(result.equals(1))
-			{
+		protected void onPostExecute(Integer result) {
+			if (result.equals(1)) {
 				tempTableLayout.setVisibility(View.GONE);
 				scanLayout.setVisibility(View.GONE);
 			}
 		}
+
 		@Override
 		protected Integer doInBackground(Void... params) {
-			//read from sharedPref
-			//getPreferences();
+			// read from sharedPref
+			// getPreferences();
 			// TODO Auto-generated method stub
-			try{
-				s = new Socket("client-75-102-77-24.mobility-cl.psu.edu", 4322);
+			try {
+				s = new Socket(server_address, 4322);
 				out = new ObjectOutputStream(s.getOutputStream());
 				out.writeObject("Table||Open_Temp_Table");
-				//				in = new ObjectInputStream(s.getInputStream());
-				//				
-				//				//display this menu
-				//				in.close();
+				// in = new ObjectInputStream(s.getInputStream());
+				//
+				// //display this menu
+				// in.close();
 				out.close();
 				s.close();
 				return new Integer(1);
-			}
-			catch(Exception e){
-				Log.d("communication",e.getMessage());
+			} catch (Exception e) {
+				Log.d("communication", e.getMessage());
 				return new Integer(0);
 			}
 		}
 
 	}
-	
-	public class SendOrderAsyncTask extends AsyncTask<Void, Integer, Integer>{
+
+	public class SendOrderAsyncTask extends AsyncTask<Void, Integer, Integer> {
 		@Override
-		protected void onPreExecute(){
+		protected void onPreExecute() {
 
 		}
+
 		@Override
-		protected void onPostExecute(Integer result){
-			if(result.equals(2))
-			{
-				Toast.makeText(getApplicationContext(), "Error: Scan Table QR Code before sending order", Toast.LENGTH_SHORT).show();
+		protected void onPostExecute(Integer result) {
+			if (result.equals(2)) {
+				Toast.makeText(getApplicationContext(),
+						"Error: Scan Table QR Code before sending order",
+						Toast.LENGTH_SHORT).show();
 			}
 		}
+
 		@Override
 		protected Integer doInBackground(Void... params) {
-			//read from sharedPref
-			//getPreferences();
+			// read from sharedPref
+			// getPreferences();
 			// TODO Auto-generated method stub
-			if(scannedId!=null)
-			{
-				try{
-					s = new Socket("client-75-102-77-24.mobility-cl.psu.edu", 4322);
+			if (scannedId != null) {
+				try {
+					s = new Socket(server_address, 4322);
 					out = new ObjectOutputStream(s.getOutputStream());
-					out.writeObject("Table||Set_Table_Order||"+scannedId);
-					//				in = new ObjectInputStream(s.getInputStream());
-					//				
-					//				//display this menu
-					//				in.close();
+					out.writeObject("Table||Set_Table_Order||" + scannedId);
+					// in = new ObjectInputStream(s.getInputStream());
+					//
+					// //display this menu
+					// in.close();
 					Order o = new Order(order);
 					o.setOrderTable(Integer.parseInt(scannedId));
 					out.writeObject(new Order(order));
 					out.close();
 					s.close();
 					return new Integer(1);
-				}
-				catch(Exception e){
-					Log.d("communication",e.getMessage());
+				} catch (Exception e) {
+					Log.d("communication", e.getMessage());
 					return new Integer(0);
 				}
-			}
-			else
-			{
+			} else {
 				return new Integer(2);
 			}
 		}
 
 	}
-
-
 
 	/*
 	 * @Override public boolean onOptionsItemSelected(MenuItem item){

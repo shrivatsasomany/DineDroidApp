@@ -47,14 +47,14 @@ public class FoodListFragment extends Fragment {
     private ArrayList<FoodItem> items = new ArrayList<FoodItem>();
     private FoodMenuListAdapter listAdapter;
     private View rootView;
-    private SharedPreferences sharedPref;
     private Editor prefEditor;
     private Menu menu = null;
     private Gson gson;
     private FoodItem selectedItem;
     private final String MENU_OBJECT = "Menu_object";
     private MenuListSelectionListener mListener = null;
-    
+    private String server_address;
+    private SharedPreferences spref;
     
     public interface MenuListSelectionListener {
 		public void onMenuListSelection(FoodItem item);
@@ -90,9 +90,9 @@ public class FoodListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-		sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		prefEditor = sharedPref.edit();
-		//getPreferences();
+		spref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		prefEditor = spref.edit();
+		getPreferences();
 		loadMenu();
     	downloadMenu();
         rootView = inflater.inflate(R.layout.fragment_food_list, container, false);
@@ -153,9 +153,7 @@ public class FoodListFragment extends Fragment {
 	}
 
     public void getPreferences(){
-		//gson = new Gson();
-        //String json = sharedPref.getString(MENU_OBJECT, "");
-       // menu = gson.fromJson(json, Menu.class);
+    		server_address = spref.getString("ServerAddress", "10.0.1.14");
     }
     
     public void savePreferences(Menu result){
@@ -203,11 +201,11 @@ public class FoodListFragment extends Fragment {
 		@Override
 		protected Menu doInBackground(Void... params) {
 			//read from sharedPref
-			//getPreferences();
+			getPreferences();
 			loadMenu();
 			// TODO Auto-generated method stub
 			try{
-				s = new Socket("client-75-102-77-24.mobility-cl.psu.edu", 4322);
+				s = new Socket("10.0.1.14", 4322);
 				out = new ObjectOutputStream(s.getOutputStream());
 				out.writeObject("Menu||Get_Menu");
 				in = new ObjectInputStream(s.getInputStream());
