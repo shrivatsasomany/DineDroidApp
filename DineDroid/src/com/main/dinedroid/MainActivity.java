@@ -180,7 +180,7 @@ public class MainActivity extends FragmentActivity implements
 					tableBG.cancel(false);
 				}
 				tableBG = (OpenTableAysncTask) new OpenTableAysncTask()
-						.execute();
+						.execute(); 
 				/*
 				 * AsyncTask to open table with QR code ID Hide QR Code and Temp
 				 * table layouts

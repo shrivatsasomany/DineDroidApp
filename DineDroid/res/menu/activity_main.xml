@@ -25,8 +25,8 @@
         android:title="Order">
     </item>
     <item
-       android:id="@+id/menu_settings"
+       android:id="@+id/action_settings"
        android:showAsAction="never"
-       android:title="@string/menu_settings"/>
+       android:title="@string/action_settings"/>
 
 </menu>

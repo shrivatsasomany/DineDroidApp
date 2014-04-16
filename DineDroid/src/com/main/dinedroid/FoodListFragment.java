@@ -189,14 +189,7 @@ public class FoodListFragment extends Fragment {
 			{
 				Toast.makeText(getActivity(), "Error downloading menu!", Toast.LENGTH_LONG).show();
 			}
-			/*items = result.getItems();
-			listAdapter = new FoodMenuListAdapter(getActivity(),
-				R.layout.food_list_item, R.id.food_list_item_name,
-				R.id.food_list_item_price, items);
-			lv.setAdapter(listAdapter);
-			listAdapter.notifyDataSetChanged();
-			lv.setVisibility(View.VISIBLE);
-			sp.setVisibility(View.GONE);*/
+			
 		}
 		@Override
 		protected Menu doInBackground(Void... params) {
@@ -205,7 +198,7 @@ public class FoodListFragment extends Fragment {
 			loadMenu();
 			// TODO Auto-generated method stub
 			try{
-				s = new Socket("10.0.1.14", 4322);
+				s = new Socket(server_address, 4322);
 				out = new ObjectOutputStream(s.getOutputStream());
 				out.writeObject("Menu||Get_Menu");
 				in = new ObjectInputStream(s.getInputStream());
