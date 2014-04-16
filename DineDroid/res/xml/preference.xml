@@ -5,5 +5,10 @@
     <EditTextPreference
         android:key="ServerAddress"
         android:title="@string/server_address_description" />
+    
+    <EditTextPreference
+    android:key="password"
+    android:title="Change Password"
+    android:password="true" />
 
 </PreferenceScreen>
