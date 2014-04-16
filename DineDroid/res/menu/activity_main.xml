@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item
+    <item android:id="@+id/hail_icon" android:title="Hail" android:icon="@drawable/waiter_icon" android:showAsAction="ifRoom|withText"></item><item
         android:id="@+id/load_menu"
         android:icon="@drawable/load_menu"
         android:showAsAction="ifRoom|withText"
@@ -13,20 +13,21 @@
         android:title="Scan Code">
     </item>
     <item
-        android:id="@+id/temp_icon"
-        android:icon="@drawable/table_icon"
-        android:showAsAction="ifRoom|withText"
-        android:title="Temp Table">
-    </item>
-    <item
         android:id="@+id/order_icon"
         android:icon="@drawable/menu_cart"
         android:showAsAction="ifRoom|withText"
         android:title="Order">
     </item>
     <item
-       android:id="@+id/menu_settings"
-       android:showAsAction="never"
-       android:title="@string/menu_settings"/>
+        android:id="@+id/temp_icon"
+        android:icon="@drawable/table_icon"
+        android:showAsAction="ifRoom|withText"
+        android:title="Temp Table">
+    </item>
+    <item
+        android:id="@+id/menu_settings"
+        android:showAsAction="never"
+        android:title="@string/action_settings"/>
+    
 
 </menu>

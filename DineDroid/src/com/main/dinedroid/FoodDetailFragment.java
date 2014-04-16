@@ -288,8 +288,6 @@ public class FoodDetailFragment extends Fragment {
 			extras.setAdapter(extrasListAdapter);
 		}
 
-
-
 		d.show();
 
 	}

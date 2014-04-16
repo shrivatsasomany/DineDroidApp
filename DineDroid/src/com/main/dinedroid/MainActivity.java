@@ -9,6 +9,10 @@ import jim.h.common.android.lib.zxing.config.ZXingLibConfig;
 import jim.h.common.android.lib.zxing.integrator.IntentIntegrator;
 import jim.h.common.android.lib.zxing.integrator.IntentResult;
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -18,26 +22,35 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.main.dinedroid.FoodDetailFragment.DetailListSelectionListener;
 import com.main.dinedroid.FoodDetailFragment.FoodItemSelectionListener;
 import com.main.dinedroid.FoodListFragment.MenuListSelectionListener;
+import com.main.dinedroid.customclasses.OrderListAdapter;
 import com.main.dinedroid.menu.FoodItem;
 import com.main.dinedroid.models.Order;
-import com.main.dinedroid.SettingsActivity;
 
 //import com.main.dinedroid.menu.Menu;
 
 public class MainActivity extends FragmentActivity implements
-		MenuListSelectionListener, DetailListSelectionListener,
-		FoodItemSelectionListener {
+MenuListSelectionListener, DetailListSelectionListener,
+FoodItemSelectionListener {
 
 	private Socket s;
 	private ObjectInputStream in;
@@ -51,18 +64,22 @@ public class MainActivity extends FragmentActivity implements
 	private LinearLayout tempTableLayout;
 	private ImageView detailShadow;
 	private ImageView menuShadow;
-	private boolean rightShadowEnabled = false;
+	
+	private Menu myMenu;
 	private ZXingLibConfig zxingLibConfig;
-	private String scannedId;
+	private Integer tableId;
+	private Integer waiterId;
 	private OpenTableAysncTask tableBG;
 	private OpenTempTableAsyncTask tempBG;
 	private SendOrderAsyncTask orderBG;
+	private AttachWaiterAsyncTask waiterBG;
+	private HailWaiterAsyncTask hailBG;
 	private final String SERVER_ADDRESS = "ServerAddress";
 	private String server_address;
 	private SharedPreferences spref;
-	
-	private ArrayList<FoodItem> order = new ArrayList<FoodItem>();
 
+	private OrderListAdapter orderListAdapter;
+	private ArrayList<FoodItem> order = new ArrayList<FoodItem>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +88,10 @@ public class MainActivity extends FragmentActivity implements
 		spref = PreferenceManager.getDefaultSharedPreferences(this);
 		getPreferences();
 		zxingLibConfig = new ZXingLibConfig();
-		
+
+		orderListAdapter = new OrderListAdapter(this, R.layout.order_list_item,
+				R.id.order_list_name, R.id.order_list_quantity,
+				R.id.order_list_price, order);
 		fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
 		list = (FrameLayout) this.findViewById(R.id.list_frame_layout);
@@ -92,6 +112,7 @@ public class MainActivity extends FragmentActivity implements
 		actionBar.setDisplayShowHomeEnabled(false);
 		actionBar.setDisplayShowTitleEnabled(false);
 		getMenuInflater().inflate(R.menu.activity_main, menu);
+		myMenu = menu;
 		// View mActionBar = getLayoutInflater()
 		// .inflate(R.layout.action_bar, null);
 		// actionBar.setCustomView(mActionBar);
@@ -105,18 +126,43 @@ public class MainActivity extends FragmentActivity implements
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		
+		case R.id.hail_icon:
+			hailWaiter();
+			return true;
 		case R.id.load_menu:
 			loadMenu();
 			return true;
 		case R.id.qr_icon:
 			startScan();
 			return true;
-		case R.id.action_settings:
-			Intent intent1 = new Intent(this,SettingsActivity.class);
-			startActivityForResult(intent1,0);
+		case R.id.order_icon:
+			loadCart();
+			return true;
+		case R.id.table_icon:
+			openTemp();
+			return true;
+		case R.id.menu_settings:
+			Intent intent1 = new Intent(this, SettingsActivity.class);
+			startActivityForResult(intent1, 0);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
+		}
+	}
+	
+	public void hailWaiter(){
+		if(waiterId!=null)
+		{
+			if(hailBG != null)
+			{
+				hailBG.cancel(false);
+			}
+			hailBG = (HailWaiterAsyncTask) new HailWaiterAsyncTask().execute();
+		}
+		else
+		{
+			Toast.makeText(getApplicationContext(), "Oops!: Waiter not assigned!", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -124,21 +170,22 @@ public class MainActivity extends FragmentActivity implements
 		IntentIntegrator.initiateScan(MainActivity.this, zxingLibConfig);
 	}
 
-	public void openTemp(View v) {
+	public void openTemp() {
 		if (tempBG != null) {
 			tempBG.cancel(false);
 		}
 		tempBG = (OpenTempTableAsyncTask) new OpenTempTableAsyncTask()
-				.execute();
+		.execute();
 	}
 
-	public void loadCart(View v) {
-		Toast.makeText(getApplicationContext(), "Order Size: " + order.size(),
-				Toast.LENGTH_SHORT).show();
-		if (orderBG != null) {
-			orderBG.cancel(false);
+	public void loadCart() {
+		if (tableId != null) {
+			showOrderDialog();
+		} else {
+			Toast.makeText(getApplicationContext(),
+					"Error: Scan Table QR Code", Toast.LENGTH_SHORT).show();
 		}
-		orderBG = (SendOrderAsyncTask) new SendOrderAsyncTask().execute();
+
 	}
 
 	public void loadMenu() {
@@ -155,7 +202,8 @@ public class MainActivity extends FragmentActivity implements
 		}
 
 	}
-	public void getPreferences(){
+
+	public void getPreferences() {
 		server_address = spref.getString(SERVER_ADDRESS, "10.0.1.14");
 	}
 
@@ -175,12 +223,27 @@ public class MainActivity extends FragmentActivity implements
 						Toast.LENGTH_LONG).show();
 				// tempTableLayout.setVisibility(View.GONE);
 				// scanLayout.setVisibility(View.GONE);
-				scannedId = result;
-				if (tableBG != null) {
-					tableBG.cancel(false);
+				String[] split_result = result.split("\\|\\|");
+				if(split_result[0].equals("Table"))
+				{
+					tableId = Integer.parseInt(split_result[1]);
+					if (tableBG != null) {
+						tableBG.cancel(false);
+					}
+					tableBG = (OpenTableAysncTask) new OpenTableAysncTask()
+					.execute();
 				}
-				tableBG = (OpenTableAysncTask) new OpenTableAysncTask()
-						.execute();
+				else if(split_result[0].equals("Waiter"))
+				{
+					waiterId = Integer.parseInt(split_result[1]);
+					if(waiterBG != null)
+					{
+						waiterBG.cancel(false);
+					}
+					waiterBG = (AttachWaiterAsyncTask) new AttachWaiterAsyncTask().execute();
+				}
+				else
+				{}
 				/*
 				 * AsyncTask to open table with QR code ID Hide QR Code and Temp
 				 * table layouts
@@ -189,7 +252,7 @@ public class MainActivity extends FragmentActivity implements
 		default:
 			getPreferences();
 			break;
-		
+
 		}
 	}
 
@@ -216,6 +279,7 @@ public class MainActivity extends FragmentActivity implements
 	public void onFoodItemSelected(FoodItem item) {
 		// TODO Auto-generated method stub
 		order.add(item);
+		orderListAdapter.notifyDataSetChanged();
 	}
 
 	public void highlightMenuFragment() {
@@ -247,7 +311,7 @@ public class MainActivity extends FragmentActivity implements
 			try {
 				s = new Socket(server_address, 4322);
 				out = new ObjectOutputStream(s.getOutputStream());
-				out.writeObject("Table||Open_Table||" + scannedId);
+				out.writeObject("Table||Open_Table||" + tableId);
 				// in = new ObjectInputStream(s.getInputStream());
 				//
 				// //display this menu
@@ -261,9 +325,92 @@ public class MainActivity extends FragmentActivity implements
 		}
 
 	}
+	
+	public class HailWaiterAsyncTask extends AsyncTask<Void, Integer, Void> {
+		@Override
+		protected void onPreExecute() {
+
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+	
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			// read from sharedPref
+			// getPreferences();
+			// TODO Auto-generated method stub
+			if(waiterId != null)
+			{
+				try {
+					s = new Socket(server_address, 4322);
+					out = new ObjectOutputStream(s.getOutputStream());
+					out.writeObject("Hail||Set_Hail||" + tableId);
+					// in = new ObjectInputStream(s.getInputStream());
+					//
+					// //display this menu
+					// in.close();
+					out.close();
+					s.close();
+				} catch (Exception e) {
+					Log.d("communication", e.getMessage());
+				}
+			}
+			return null;
+		}
+
+	}
+
+	public class AttachWaiterAsyncTask extends AsyncTask<Void, Integer, Integer> {
+		@Override
+		protected void onPreExecute() {
+
+		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+			if(result == 0)
+			{
+				Toast.makeText(getApplicationContext(), "Error: Scan Table QR Code", Toast.LENGTH_LONG).show();
+			}
+			else
+			{
+				MenuItem t = (MenuItem)myMenu.findItem(R.id.qr_icon);
+				t.setVisible(false);
+			}
+		}
+
+		@Override
+		protected Integer doInBackground(Void... params) {
+			// read from sharedPref
+			// getPreferences();
+			// TODO Auto-generated method stub
+			if(tableId != null)
+			{
+				try {
+					s = new Socket(server_address, 4322);
+					out = new ObjectOutputStream(s.getOutputStream());
+					out.writeObject("Waiter||Assign_Waiter||" + tableId +"||"+ waiterId);
+					// in = new ObjectInputStream(s.getInputStream());
+					//
+					// //display this menu
+					// in.close();
+					out.close();
+					s.close();
+					return 1;
+				} catch (Exception e) {
+					Log.d("communication", e.getMessage());
+				}
+			}
+			return 0;
+		}
+
+	}
 
 	public class OpenTempTableAsyncTask extends
-			AsyncTask<Void, Integer, Integer> {
+	AsyncTask<Void, Integer, Integer> {
 		@Override
 		protected void onPreExecute() {
 
@@ -309,10 +456,16 @@ public class MainActivity extends FragmentActivity implements
 
 		@Override
 		protected void onPostExecute(Integer result) {
-			if (result.equals(2)) {
+			switch (result) {
+			case 1:
+				Toast.makeText(getApplicationContext(), "Order sent!",
+						Toast.LENGTH_SHORT).show();
+				break;
+			case 2:
 				Toast.makeText(getApplicationContext(),
 						"Error: Scan Table QR Code before sending order",
 						Toast.LENGTH_SHORT).show();
+				break;
 			}
 		}
 
@@ -321,17 +474,17 @@ public class MainActivity extends FragmentActivity implements
 			// read from sharedPref
 			// getPreferences();
 			// TODO Auto-generated method stub
-			if (scannedId != null) {
+			if (tableId != null) {
 				try {
 					s = new Socket(server_address, 4322);
 					out = new ObjectOutputStream(s.getOutputStream());
-					out.writeObject("Table||Set_Table_Order||" + scannedId);
+					out.writeObject("Table||Set_Table_Order||" + tableId);
 					// in = new ObjectInputStream(s.getInputStream());
 					//
 					// //display this menu
 					// in.close();
 					Order o = new Order(order);
-					o.setOrderTable(Integer.parseInt(scannedId));
+					o.setOrderTable(tableId);
 					out.writeObject(new Order(order));
 					out.close();
 					s.close();
@@ -347,11 +500,82 @@ public class MainActivity extends FragmentActivity implements
 
 	}
 
-	/*
-	 * @Override public boolean onOptionsItemSelected(MenuItem item){
-	 * switch(item.getItemId()){ case R.id.load_menu: FragmentTransaction ft =
-	 * fm.beginTransaction(); ft.add(R.id.list_frame_layout, new
-	 * FoodListFragment()); ft.commit(); } return true; }
-	 */
+	public void showOrderDialog() {
+		final Order o = new Order(order);
+		o.setOrderTable(tableId);
+
+		AlertDialog.Builder customDialog = new AlertDialog.Builder(this);
+		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+		View view = layoutInflater.inflate(R.layout.order_dialog, null);
+
+		TextView information = (TextView) view
+				.findViewById(R.id.order_detail_information);
+
+		customDialog.setTitle("Table "+tableId+" Order");
+		customDialog.setPositiveButton("Submit",
+				new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+
+				if (orderBG != null) {
+					orderBG.cancel(false);
+				}
+				orderBG = (SendOrderAsyncTask) new SendOrderAsyncTask()
+				.execute();
+				dialog.dismiss();
+
+			}
+		});
+		customDialog.setNegativeButton("Back",
+				new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.dismiss();
+			}
+		});
+
+
+		String info = "Total Price: $" + o.getTotalPrice();
+		information.setText(info);
+
+		final ListView orderList = (ListView) view
+				.findViewById(R.id.order_detail_list);
+		orderList.setAdapter(orderListAdapter);
+		orderList.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				// TODO Auto-generated method stub
+				FoodItem selectedItem = (FoodItem) orderListAdapter.getItem(position);
+				orderListAdapter.remove(selectedItem);
+				orderListAdapter.notifyDataSetChanged();
+				return false;
+			}
+		});
+		orderList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				FoodItem selectedItem = (FoodItem) orderListAdapter
+						.getItem(position);
+				AlertDialog.Builder itemView = new AlertDialog.Builder(MainActivity.this);
+				TextView info = new TextView(MainActivity.this);
+				info.setText(selectedItem.displayString());
+				itemView.setView(info);
+				itemView.show();
+			}
+		});
+
+		final Dialog d = customDialog.setView(view).create();
+		d.show();
+
+	}
 
 }

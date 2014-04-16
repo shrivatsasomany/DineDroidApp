@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" 
-    			  xmlns:picker="http://schemas.android.com/apk/res/com.main.dinedroid">
-    			  
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:picker="http://schemas.android.com/apk/res/com.main.dinedroid" >
+
     <EditTextPreference
-            android:title="@string/server_address_description"
-            android:key="ServerAddress"
-            android:inputType="number" />
-</PreferenceScreen> 
+        android:key="ServerAddress"
+        android:title="@string/server_address_description" />
 
-
+</PreferenceScreen>

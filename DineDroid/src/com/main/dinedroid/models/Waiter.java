@@ -50,21 +50,30 @@ public class Waiter implements Serializable {
 		this.tables = tables;
 	}
 	
-	public void addTable(Table table)
+	public boolean addTable(Table table)
 	{
-		this.tables.add(table);
+		for(Table t : tables)
+		{
+			if(t.getId() == table.getId())
+			{
+				return false;
+			}
+		}
+		tables.add(table);
+		return true;
 	}
 	
-	public void removeTable(Table table)
+	public boolean removeTable(int tableId)
 	{
 		for(int i = 0; i < tables.size(); ++i)
 		{
-			if(tables.get(i).equals(table))
+			if(tables.get(i).getId().equals(tableId))
 			{
 				tables.remove(i);
-				break;
+				return true;
 			}
 		}
+		return false;
 	}
 
 	public ArrayList<Table> getHailQueue() {
@@ -75,7 +84,7 @@ public class Waiter implements Serializable {
 		this.hailQueue = hailQueue;
 	}
 	
-	public boolean addHail(Table table)
+	public synchronized boolean addHail(Table table)
 	{
 		for(int i = 0; i < hailQueue.size(); ++i)
 		{
@@ -87,7 +96,7 @@ public class Waiter implements Serializable {
 		return (this.hailQueue.add(table));
 	}
 	
-	public boolean removeHail(int tableId)
+	public synchronized boolean removeHail(int tableId)
 	{
 		for(int i = 0; i < hailQueue.size(); ++i)
 		{
@@ -124,7 +133,17 @@ public class Waiter implements Serializable {
 	
 	public String toString()
 	{
-		return "ID: "+id+"\tName: "+fname+ " "+lname;
+		String tableInfo = "";
+		if(!tables.isEmpty())
+		{
+			tableInfo = "[-";
+			for(Table e : tables)
+			{
+				tableInfo+=e.getId()+"-";
+			}
+			tableInfo += "]";
+		}
+		return "ID: "+id+"\tName: "+fname+ " "+lname + " - Tables: "+tableInfo;
 	}
 	
 }
