@@ -42,7 +42,8 @@ public class FoodListFragment extends Fragment {
 	private ObjectOutputStream out;
 	private BackgroundAsyncTask batFactor;
 	private ListView lv;
-	private ProgressBar sp;
+	private ProgressBar progress;
+	private ImageView alert;
     public static final String ARG_ITEM_ID = "item_id";
     private ArrayList<FoodItem> items = new ArrayList<FoodItem>();
     private FoodMenuListAdapter listAdapter;
@@ -69,7 +70,7 @@ public class FoodListFragment extends Fragment {
 			mListener = (MenuListSelectionListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
-					+ " must implement Poop");
+					+ " must implement interface");
 		}
 	}
     
@@ -110,7 +111,9 @@ public class FoodListFragment extends Fragment {
 			}
 		});
 
-		sp = (ProgressBar)rootView.findViewById(R.id.fragment_food_list_spinner);
+		progress = (ProgressBar)rootView.findViewById(R.id.fragment_food_list_spinner);
+		alert = (ImageView)rootView.findViewById(R.id.fragment_food_list_alert);
+		alert.setVisibility(View.GONE);
         return rootView;
     }
     
@@ -126,7 +129,7 @@ public class FoodListFragment extends Fragment {
 		try {
 			FileOutputStream fos = getActivity().openFileOutput("menu.dat", Context.MODE_PRIVATE);
 			ObjectOutputStream os = new ObjectOutputStream(fos);
-			os.writeObject(this);
+			os.writeObject(menu);
 			os.close();
 			return true;
 
@@ -170,7 +173,7 @@ public class FoodListFragment extends Fragment {
 			R.id.food_list_item_price, items);
 		lv.setAdapter(listAdapter);
 		lv.setVisibility(View.VISIBLE);
-		sp.setVisibility(View.GONE);
+		progress.setVisibility(View.GONE);
     }
     public class BackgroundAsyncTask extends AsyncTask<Void, Integer, Menu>{
 		@Override
@@ -187,7 +190,10 @@ public class FoodListFragment extends Fragment {
 			}
 			else
 			{
+				alert.setVisibility(View.VISIBLE);
+				progress.setVisibility(View.GONE);
 				Toast.makeText(getActivity(), "Error downloading menu!", Toast.LENGTH_LONG).show();
+				Toast.makeText(getActivity(), "|"+server_address+"|", Toast.LENGTH_SHORT).show();
 			}
 			
 		}
@@ -210,6 +216,7 @@ public class FoodListFragment extends Fragment {
 			}
 			catch(Exception e){
 				Log.d("communication",e.getMessage());
+				
 			}
 			return menu;
 		}

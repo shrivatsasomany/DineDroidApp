@@ -47,6 +47,21 @@ public class Order implements Serializable {
 		return orderNotes;
 	}
 	
+	public double getTotalPrice()
+	{
+		double totalPrice = 0;
+		for(FoodItem e : order)
+		{
+			totalPrice += (e.getPrice());
+			for(FoodItem f : e.getExtras())
+			{
+				totalPrice += f.getPrice();
+			}
+			totalPrice = totalPrice*e.getQuantity();
+		}
+		return totalPrice;
+	}
+	
 	public String toString()
 	{
 		return "Table: "+tableId;
