@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -36,7 +37,7 @@ public class LoginFragment extends DialogFragment {
         theView = inflater.inflate(R.layout.login_fragment, null);
         Context context=getActivity();
         
-        pref=context.getSharedPreferences("Password",Context.MODE_PRIVATE);
+        pref=PreferenceManager.getDefaultSharedPreferences(context);
         password=pref.getString("password", "admin");
         
      // Inflate and set the layout for the dialog

@@ -33,6 +33,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -79,6 +80,9 @@ FoodItemSelectionListener {
         private final String SERVER_ADDRESS = "ServerAddress";
         private String server_address;
         private SharedPreferences spref;
+        String password;
+        private final String PASSWORD = "password";
+        
 
         private OrderListAdapter orderListAdapter;
         private ArrayList<FoodItem> order = new ArrayList<FoodItem>();
@@ -141,8 +145,8 @@ FoodItemSelectionListener {
                 case R.id.order_icon:
                         loadCart();
                         return true;
-                case R.id.table_icon:
-                        openTemp();
+                case R.id.temp_icon:
+                        openLoginDialog();
                         return true;
                 case R.id.menu_settings:
                 		DialogFragment newFragment = new LoginFragment();
@@ -152,7 +156,45 @@ FoodItemSelectionListener {
                         return super.onOptionsItemSelected(item);
                 }
         }
+        
+        public void openLoginDialog(){
+        	password = spref.getString(PASSWORD, "admin");
+    		Toast.makeText(getApplicationContext(), password, Toast.LENGTH_LONG).show();
 
+        	AlertDialog.Builder customDialog = new AlertDialog.Builder(this);
+            LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+             View view = layoutInflater.inflate(R.layout.login_fragment, null);
+         	final EditText et = (EditText) view.findViewById(R.id.password);
+
+            customDialog.setTitle("Enter Password");
+            customDialog.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                            // TODO Auto-generated method stub
+                    	if(et.getText().toString().equals(password)){
+                        	openTemp();
+                    	}
+                    	else{
+                    		Toast.makeText(getApplicationContext(), "Incorrect Password! ", Toast.LENGTH_LONG).show();
+                    	}
+                    	
+                    }
+            });
+            customDialog.setNegativeButton("Back",
+                            new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                            // TODO Auto-generated method stub
+                    	//Do nothing
+                    }
+            });
+            final Dialog d = customDialog.setView(view).create();
+            d.show();
+        }
         public void hailWaiter(){
                 if(waiterId!=null)
                 {
@@ -207,6 +249,7 @@ FoodItemSelectionListener {
 
         public void getPreferences() {
                 server_address = spref.getString(SERVER_ADDRESS, "10.0.1.14");
+                password = spref.getString(PASSWORD, "admin");
         }
 
         @Override
