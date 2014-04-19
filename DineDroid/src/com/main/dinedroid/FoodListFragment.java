@@ -53,13 +53,18 @@ public class FoodListFragment extends Fragment {
     private Gson gson;
     private FoodItem selectedItem;
     private final String MENU_OBJECT = "Menu_object";
-    private MenuListSelectionListener mListener = null;
+    private MenuListSelectionListener menuListListener = null;
+    private MenuDownloadListener menuDownloadListener = null;
     private String server_address;
     private SharedPreferences spref;
     
     public interface MenuListSelectionListener {
 		public void onMenuListSelection(FoodItem item);
 	}
+    
+    public interface MenuDownloadListener{
+    	public void onMenuDownload(Menu menu);
+    }
 
 
 	@Override
@@ -67,17 +72,18 @@ public class FoodListFragment extends Fragment {
 		super.onAttach(activity);
 
 		try {
-			mListener = (MenuListSelectionListener) activity;
+			menuListListener = (MenuListSelectionListener) activity;
+			menuDownloadListener = (MenuDownloadListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
-					+ " must implement interface");
+					+ " must implement required interfaces");
 		}
 	}
     
 
 	public void onListItemClick(FoodMenuListAdapter adapter, View v, int pos, long id) {
 		selectedItem = (FoodItem) adapter.getItem(pos);
-		mListener.onMenuListSelection(selectedItem);
+		menuListListener.onMenuListSelection(selectedItem);
 		
 	}
     
@@ -186,6 +192,7 @@ public class FoodListFragment extends Fragment {
 			{
 				saveMenu();
 				displayFoodMenuListAdapter(result);
+				menuDownloadListener.onMenuDownload(result);
 				//savePreferences(result);
 			}
 			else
@@ -206,7 +213,9 @@ public class FoodListFragment extends Fragment {
 			try{
 				s = new Socket(server_address, 4322);
 				out = new ObjectOutputStream(s.getOutputStream());
+				out.flush();
 				out.writeObject("Menu||Get_Menu");
+				out.flush();
 				in = new ObjectInputStream(s.getInputStream());
 				menu = (Menu)in.readObject();
 				//display this menu

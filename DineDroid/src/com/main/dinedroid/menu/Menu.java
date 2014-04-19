@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 public class Menu implements Serializable {
 	private ArrayList<FoodItem> items = new ArrayList<FoodItem>();
+	private HashMap<Object, FoodItem> itemMap;
 
 	public Menu() {
 	}
@@ -43,14 +44,17 @@ public class Menu implements Serializable {
 	public FoodItem findItem(int itemId)
 	{
 		FoodItem result = null;
-		for(int i = 0; i < items.size(); ++i)
-		{
-			result = items.get(i).findItem(itemId);
-			if (result != null)
-			{
-				break;
-			}
-		}
+		result = itemMap.get(itemId);
 		return result;
+	}
+	
+	public HashMap<Object, FoodItem> getMap()
+	{
+		return itemMap;
+	}
+	
+	public void setMap(HashMap<Object, FoodItem> map)
+	{
+		itemMap = map;
 	}
 }

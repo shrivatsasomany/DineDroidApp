@@ -5,6 +5,16 @@
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal" >
 
+    <TextView
+        android:id="@+id/order_list_availability"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:text="\u2717"
+        android:visibility="invisible"
+        android:textColor="@android:color/holo_red_light"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
     <com.main.dinedroid.customclasses.ScrollingTextView
         android:id="@+id/order_list_name"
         android:layout_width="280dp"

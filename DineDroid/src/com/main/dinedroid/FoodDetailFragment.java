@@ -64,6 +64,7 @@ public class FoodDetailFragment extends Fragment {
 		if (selectedItem.isCategory()) {
 			mDetailListener.onDetailListSelection(selectedItem);
 		} else {
+			Log.d("FoodItem", "Availability: "+selectedItem.isAvailable());
 			showFoodDialog(selectedItem);
 		}
 	}
@@ -170,6 +171,7 @@ public class FoodDetailFragment extends Fragment {
 		final HashMap<Integer, FoodItem> extrasList = new HashMap<Integer, FoodItem>();
 		final EditText notes = new EditText(getActivity());
 		final FoodItem temp = new FoodItem(item.getID(), item.getName(), item.getPrice(), false);
+		temp.setAvailable(item.isAvailable());
 		AlertDialog.Builder customDialog = new AlertDialog.Builder(
 				getActivity());
 		customDialog.setPositiveButton("Add", new DialogInterface.OnClickListener() {
