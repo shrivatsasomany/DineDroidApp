@@ -6,12 +6,12 @@ public class Restore implements Serializable {
 	
 	private boolean isOccupied;
 	private Order o;
-	private int waiterId;
+	private Waiter waiter;
 	
-	public Restore(boolean isOccupied, Order o, int waiterId) {
+	public Restore(boolean isOccupied, Order o, Waiter waiter) {
 		this.isOccupied = isOccupied;
 		this.o = o;
-		this.waiterId = waiterId;
+		this.waiter = waiter;
 	}
 
 	public boolean isOccupied() {
@@ -30,12 +30,12 @@ public class Restore implements Serializable {
 		this.o = o;
 	}
 
-	public int getWaiterId() {
-		return waiterId;
+	public Waiter getWaiter() {
+		return waiter;
 	}
 
-	public void setWaiterId(int waiterId) {
-		this.waiterId = waiterId;
+	public void setWaiter(Waiter waiter) {
+		this.waiter = waiter;
 	}
 	
 }
