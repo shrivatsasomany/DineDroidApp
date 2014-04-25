@@ -69,7 +69,7 @@ public class MainActivity extends FragmentActivity implements
 
 	private Menu myMenu;
 	private ZXingLibConfig zxingLibConfig;
-	private Integer tableId = 5;
+	private Integer tableId;
 	private Integer waiterId;
 	private OpenTableAysncTask tableBG;
 	private OpenTempTableAsyncTask tempBG;

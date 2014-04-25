@@ -75,6 +75,15 @@ public class Waiter implements Serializable {
 		}
 		return false;
 	}
+	
+	public boolean removeAllTables()
+	{
+		for(int i = 0; i < tables.size(); ++i)
+		{
+			tables.remove(i);
+		}
+		return true;
+	}
 
 	public ArrayList<Table> getHailQueue() {
 		return hailQueue;
