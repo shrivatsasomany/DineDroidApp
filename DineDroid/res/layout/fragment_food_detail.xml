@@ -3,17 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FoodDetailFragment" >
-	
-     <ImageView
+
+    <ImageView
         android:id="@+id/fragment_food_detail_background"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        
-        android:src="@android:drawable/sym_def_app_icon" />
-    
-    
+        android:scaleType="centerCrop"
+        android:src="@drawable/android_bg" />
+
     <ListView
         android:id="@+id/fragment_food_detail_listview"
         android:layout_width="wrap_content"
@@ -24,14 +23,14 @@
 
     <Button
         android:id="@+id/fragment_food_detail_back_button"
-        android:layout_width="fill_parent"
-        android:padding="5dp"
-        android:gravity="center"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_orange_dark"
         style="@android:style/Widget.Holo.Button.Borderless"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@drawable/back_button_selector"
-        android:text="\u2190 Previous Category" />
-   
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="\u2190 Previous Category"
+        android:textColor="@android:color/holo_orange_dark" />
+
 </RelativeLayout>

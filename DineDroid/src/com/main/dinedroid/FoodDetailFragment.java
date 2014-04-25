@@ -100,6 +100,7 @@ public class FoodDetailFragment extends Fragment {
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_food_detail,
 				container, false);
+		int init = getArguments().getInt("init");
 		categories = (ListView) rootView
 				.findViewById(R.id.fragment_food_detail_listview);
 		categories.setVisibility(View.INVISIBLE);
@@ -126,6 +127,11 @@ public class FoodDetailFragment extends Fragment {
 			}
 		});
 		backButton.setVisibility(View.GONE);
+		if(init == 0)
+		{
+			passedItem = (FoodItem)getArguments().getSerializable("Item");
+			populateList(passedItem);
+		}
 		return rootView;
 	}
 

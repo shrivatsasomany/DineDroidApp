@@ -4,6 +4,14 @@
     android:layout_height="match_parent"
     tools:context=".FoodDetailFragment" >
 
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="centerCrop"
+        android:alpha="0.4"
+        android:src="@drawable/list_background" />
+
     <ListView
         android:id="@+id/fragment_food_list_listview"
         android:layout_width="match_parent"

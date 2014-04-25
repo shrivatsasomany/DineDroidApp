@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ public class OrderListAdapter extends ArrayAdapter {
 	int name_id;
 	int price_id;
 	int quantity_id;
+	Typeface ql;
 
 	public OrderListAdapter(Activity context, int layoutId,
 			int availability_id, int name_id, int quantity_id, int price_id,
@@ -38,6 +40,7 @@ public class OrderListAdapter extends ArrayAdapter {
 		this.name_id = name_id;
 		this.price_id = price_id;
 		this.quantity_id = quantity_id;
+		ql = Typeface.createFromAsset(context.getAssets(), "fonts/Quicksand_Bold.otf");
 
 	}
 
@@ -52,6 +55,9 @@ public class OrderListAdapter extends ArrayAdapter {
 		TextView price = (TextView) row.findViewById(price_id);
 		TextView quantity = (TextView) row.findViewById(quantity_id);
 		TextView availability = (TextView) row.findViewById(availability_id);
+		title.setTypeface(ql);
+		price.setTypeface(ql);
+		quantity.setTypeface(ql);
 		if (!order.get(pos).isAvailable()) {
 			
 			availability.setVisibility(View.VISIBLE);

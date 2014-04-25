@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ public class FoodMenuListAdapter extends ArrayAdapter
 	int layoutId;
 	int name_id;
 	int price_id;
+	Typeface ql;
 
 
 
@@ -33,7 +35,7 @@ public class FoodMenuListAdapter extends ArrayAdapter
 		this.layoutId = layoutId;
 		this.name_id = name_id;
 		this.price_id = price_id;
-
+		ql = Typeface.createFromAsset(context.getAssets(), "fonts/Quicksand_Bold.otf");
 	} 
 
 	@Override
@@ -47,11 +49,12 @@ public class FoodMenuListAdapter extends ArrayAdapter
 		}
 		ScrollingTextView title=(ScrollingTextView)row.findViewById(name_id);
 		TextView price = (TextView)row.findViewById(price_id);
-
+		title.setTypeface(ql);
+		price.setTypeface(ql);
 
 
 		title.setText(items.get(pos).getName()); 
-
+		
 
 		DecimalFormat oneDigit = new DecimalFormat("#,##0");
 		NumberFormat nf = NumberFormat.getInstance(Locale.US);

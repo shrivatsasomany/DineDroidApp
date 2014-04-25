@@ -52,8 +52,8 @@ import com.main.dinedroid.models.Waiter;
 //import com.main.dinedroid.menu.Menu;
 
 public class MainActivity extends FragmentActivity implements
-		MenuListSelectionListener, DetailListSelectionListener,
-		FoodItemSelectionListener, MenuDownloadListener {
+MenuListSelectionListener, DetailListSelectionListener,
+FoodItemSelectionListener, MenuDownloadListener {
 
 	private Socket s;
 	private ObjectInputStream in;
@@ -61,7 +61,7 @@ public class MainActivity extends FragmentActivity implements
 	private FragmentManager fm;
 	private FoodListFragment menu_fragment = new FoodListFragment();
 	private FoodDetailFragment detail_fragment = new FoodDetailFragment();
-	private TableDetailFragment table_detail_fragment = new TableDetailFragment();
+	private TableDetailFragment table_detail_fragment;
 	private FrameLayout list;
 	private FrameLayout details;
 	private LinearLayout scanLayout;
@@ -73,6 +73,7 @@ public class MainActivity extends FragmentActivity implements
 	private ZXingLibConfig zxingLibConfig;
 	private Integer tableId;
 	private Integer waiterId;
+	private String waiterName;
 	private OpenTableAysncTask tableBG;
 	private OpenTempTableAsyncTask tempBG;
 	private SendOrderAsyncTask orderBG;
@@ -86,6 +87,7 @@ public class MainActivity extends FragmentActivity implements
 	private SharedPreferences spref;
 	private OrderListAdapter orderListAdapter;
 	private ArrayList<FoodItem> order = new ArrayList<FoodItem>();
+	private boolean sentOrder = false;
 	ArrayList<FoodItem> unavailableItems;
 
 	@Override
@@ -108,6 +110,9 @@ public class MainActivity extends FragmentActivity implements
 		menuShadow.setVisibility(View.INVISIBLE);
 		detailShadow.setVisibility(View.INVISIBLE);
 		list.setVisibility(View.GONE);
+		Bundle myBundle = new Bundle();
+		myBundle.putInt("init", 1);
+		detail_fragment.setArguments(myBundle);
 		ft.add(R.id.detail_frame_layout, detail_fragment);
 		ft.commit();
 
@@ -134,83 +139,82 @@ public class MainActivity extends FragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 
-                case R.id.hail_icon:
-                        hailWaiter();
-                        return true;
-                case R.id.load_menu:
-                        loadMenu();
-                        return true;
-                case R.id.qr_icon:
-                        startScan();
-                        return true;
-                case R.id.order_icon:
-                        loadCart();
-                        return true;
-                case R.id.temp_icon:
-                        openLoginDialog();
-                        return true;
-                case R.id.menu_settings:
-                		DialogFragment newFragment = new LoginFragment();
-                		newFragment.show(getFragmentManager(), "LoginFragment");
-                        return true;
-                default:
-                        return super.onOptionsItemSelected(item);
-                }
-        }
-        
-        public void openLoginDialog(){
-        	password = spref.getString(PASSWORD, "admin");
-    		Toast.makeText(getApplicationContext(), password, Toast.LENGTH_LONG).show();
+		case R.id.hail_icon:
+			hailWaiter();
+			return true;
+		case R.id.load_menu:
+			loadMenu();
+			return true;
+		case R.id.qr_icon:
+			startScan();
+			return true;
+		case R.id.order_icon:
+			loadCart();
+			return true;
+		case R.id.temp_icon:
+			openLoginDialog();
+			return true;
+		case R.id.menu_settings:
+			DialogFragment newFragment = new LoginFragment();
+			newFragment.show(getFragmentManager(), "LoginFragment");
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
 
-        	AlertDialog.Builder customDialog = new AlertDialog.Builder(this);
-            LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	public void openLoginDialog() {
+		password = spref.getString(PASSWORD, "admin");
+		Toast.makeText(getApplicationContext(), password, Toast.LENGTH_LONG)
+		.show();
 
-             View view = layoutInflater.inflate(R.layout.login_fragment, null);
-         	final EditText et = (EditText) view.findViewById(R.id.password);
+		AlertDialog.Builder customDialog = new AlertDialog.Builder(this);
+		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            customDialog.setTitle("Enter Password");
-            customDialog.setPositiveButton("Ok",
-                            new DialogInterface.OnClickListener() {
+		View view = layoutInflater.inflate(R.layout.login_fragment, null);
+		final EditText et = (EditText) view.findViewById(R.id.password);
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                            // TODO Auto-generated method stub
-                    	if(et.getText().toString().equals(password)){
-                        	openTemp();
-                    	}
-                    	else{
-                    		Toast.makeText(getApplicationContext(), "Incorrect Password! ", Toast.LENGTH_LONG).show();
-                    	}
-                    	
-                    }
-            });
-            customDialog.setNegativeButton("Back",
-                            new DialogInterface.OnClickListener() {
+		customDialog.setTitle("Enter Password");
+		customDialog.setPositiveButton("Ok",
+				new DialogInterface.OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                            // TODO Auto-generated method stub
-                    	//Do nothing
-                    }
-            });
-            final Dialog d = customDialog.setView(view).create();
-            d.show();
-        }
-        public void hailWaiter(){
-                if(waiterId!=null)
-                {
-                        if(hailBG != null)
-                        {
-                                hailBG.cancel(false);
-                        }
-                        hailBG = (HailWaiterAsyncTask) new HailWaiterAsyncTask().execute();
-                }
-                else
-                {
-                        Toast.makeText(getApplicationContext(), "Oops!: Waiter not assigned!", Toast.LENGTH_SHORT).show();
-                }
-        }
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				if (et.getText().toString().equals(password)) {
+					openTemp();
+				} else {
+					Toast.makeText(getApplicationContext(),
+							"Incorrect Password! ", Toast.LENGTH_LONG)
+							.show();
+				}
 
+			}
+		});
+		customDialog.setNegativeButton("Back",
+				new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				// Do nothing
+			}
+		});
+		final Dialog d = customDialog.setView(view).create();
+		d.show();
+	}
+
+	public void hailWaiter() {
+		if (waiterId != null) {
+			if (hailBG != null) {
+				hailBG.cancel(false);
+			}
+			hailBG = (HailWaiterAsyncTask) new HailWaiterAsyncTask().execute();
+		} else {
+			Toast.makeText(getApplicationContext(),
+					"Oops!: Waiter not assigned!", Toast.LENGTH_SHORT).show();
+		}
+	}
 
 	public void startScan() {
 		IntentIntegrator.initiateScan(MainActivity.this, zxingLibConfig);
@@ -221,7 +225,7 @@ public class MainActivity extends FragmentActivity implements
 			tempBG.cancel(false);
 		}
 		tempBG = (OpenTempTableAsyncTask) new OpenTempTableAsyncTask()
-				.execute();
+		.execute();
 	}
 
 	public void loadCart() {
@@ -233,18 +237,18 @@ public class MainActivity extends FragmentActivity implements
 		}
 
 	}
-	
+
 	/*
 	 * return table id
 	 */
-	public int getTableId(){
+	public int getTableId() {
 		return tableId;
 	}
-	
+
 	/*
 	 * return waiter id
 	 */
-	public int getWaiterId(){
+	public int getWaiterId() {
 		return waiterId;
 	}
 
@@ -263,11 +267,10 @@ public class MainActivity extends FragmentActivity implements
 
 	}
 
-        public void getPreferences() {
-                server_address = spref.getString(SERVER_ADDRESS, "10.0.1.14");
-                password = spref.getString(PASSWORD, "admin");
-        }
-
+	public void getPreferences() {
+		server_address = spref.getString(SERVER_ADDRESS, "10.0.1.14");
+		password = spref.getString(PASSWORD, "admin");
+	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -289,14 +292,15 @@ public class MainActivity extends FragmentActivity implements
 						tableBG.cancel(false);
 					}
 					tableBG = (OpenTableAysncTask) new OpenTableAysncTask()
-							.execute();
+					.execute();
 				} else if (split_result[0].equals("Waiter")) {
 					waiterId = Integer.parseInt(split_result[1]);
+					waiterName = split_result[2] + " " + split_result[3];
 					if (waiterBG != null) {
 						waiterBG.cancel(false);
 					}
 					waiterBG = (AttachWaiterAsyncTask) new AttachWaiterAsyncTask()
-							.execute();
+					.execute();
 				} else {
 					Toast.makeText(getApplicationContext(),
 							"Error: Invalid QR Code", Toast.LENGTH_SHORT)
@@ -317,26 +321,38 @@ public class MainActivity extends FragmentActivity implements
 	@Override
 	public void onMenuListSelection(FoodItem item) {
 		// TODO Auto-generated method stub
-		detail_fragment.populateList(item);
+
+		detail_fragment = new FoodDetailFragment();
+		Bundle myBundle = new Bundle();
+		myBundle.putSerializable("Item", item);
+		myBundle.putInt("init", 0);
+		detail_fragment.setArguments(myBundle);
+		FragmentTransaction ft = fm.beginTransaction();
+		ft.replace(R.id.detail_frame_layout, detail_fragment);
+		ft.commit();
+		table_detail_fragment = null;
+
 		highlightDetailFragment();
 	}
-	
 
 	/**
 	 * Listen to callbacks after downloading the menu in the FoodList fragment
-	 * The class name clashes with android.Menu, and therefore has to be explicitly stated here.<br>
-	 * If the order size is <b>not</b> 0, this should update the order with the new menu.
-	 * @param menu The menu
+	 * The class name clashes with android.Menu, and therefore has to be
+	 * explicitly stated here.<br>
+	 * If the order size is <b>not</b> 0, this should update the order with the
+	 * new menu.
+	 * 
+	 * @param menu
+	 *            The menu
 	 */
 	@Override
 	public void onMenuDownload(com.main.dinedroid.menu.Menu menu) {
 		// TODO Auto-generated method stub
-		if(order.size()!=0)
-		{
-			for(FoodItem e:order)
-			{
+		if (order.size() != 0) {
+			for (FoodItem e : order) {
 				e.setAvailable(menu.findItem(e.getID()).isAvailable());
-				Log.d("FoodItem", "Refreshing orders: " + " avail: "+e.isAvailable());
+				Log.d("FoodItem",
+						"Refreshing orders: " + " avail: " + e.isAvailable());
 			}
 			orderListAdapter.notifyDataSetChanged();
 		}
@@ -357,7 +373,8 @@ public class MainActivity extends FragmentActivity implements
 	@Override
 	public void onFoodItemSelected(FoodItem item) {
 		// TODO Auto-generated method stub
-		Log.d("FoodItem", "Adding to order: "+item.getName() + " Availability: "+item.isAvailable());
+		Log.d("FoodItem", "Adding to order: " + item.getName()
+				+ " Availability: " + item.isAvailable());
 		order.add(item);
 		orderListAdapter.notifyDataSetChanged();
 	}
@@ -365,11 +382,32 @@ public class MainActivity extends FragmentActivity implements
 	public void highlightMenuFragment() {
 		detailShadow.setVisibility(View.VISIBLE);
 		menuShadow.setVisibility(View.GONE);
+		if (sentOrder) {
+			launchTableDetailFragment();
+		}
 	}
 
 	public void highlightDetailFragment() {
 		detailShadow.setVisibility(View.GONE);
 		menuShadow.setVisibility(View.VISIBLE);
+	}
+
+	public void launchTableDetailFragment() {
+		table_detail_fragment = new TableDetailFragment();
+		Bundle myBundle = new Bundle();
+		myBundle.putInt("NumInfo", 1);
+		myBundle.putInt("tableId", tableId);
+		if (waiterId != null) {
+			myBundle.putInt("NumInfo", 2);
+			myBundle.putInt("waiterId", waiterId);
+			myBundle.putString("waiterName", waiterName);
+		}
+		table_detail_fragment.setArguments(myBundle);
+		FragmentTransaction ft = fm.beginTransaction();
+		if (table_detail_fragment != null) {
+			ft.replace(R.id.detail_frame_layout, table_detail_fragment);
+			ft.commit();
+		}
 	}
 
 	public class OpenTableAysncTask extends AsyncTask<Void, Integer, Restore> {
@@ -388,6 +426,7 @@ public class MainActivity extends FragmentActivity implements
 					Order o = result.getOrder();
 					if (w != null) {
 						waiterId = w.getId();
+						waiterName = w.getFName() + " " + w.getLName();
 					}
 					if (o != null) {
 						order = result.getOrder().getOrder();
@@ -400,9 +439,13 @@ public class MainActivity extends FragmentActivity implements
 
 					showMessageDialog("Table " + tableId
 							+ " was already open.\nRestored previous state...");
+					if (o != null) {
+						launchTableDetailFragment();
+					}
 				}
 			} else {
 				showMessageDialog("Communication error while trying to set table,\nplease try again");
+				tableId = null;
 			}
 		}
 
@@ -474,7 +517,7 @@ public class MainActivity extends FragmentActivity implements
 	}
 
 	public class AttachWaiterAsyncTask extends
-			AsyncTask<Void, Integer, Boolean> {
+	AsyncTask<Void, Integer, Boolean> {
 		@Override
 		protected void onPreExecute() {
 
@@ -484,8 +527,13 @@ public class MainActivity extends FragmentActivity implements
 		protected void onPostExecute(Boolean result) {
 			if (result) {
 				showToast("Successfully attached waiter", Toast.LENGTH_SHORT);
+				if (table_detail_fragment != null) {
+					table_detail_fragment.setWaiterName(waiterName);
+				}
 			} else {
 				showMessageDialog("Could not assign waiter, please try again.");
+				waiterId = null;
+				waiterName = null;
 			}
 		}
 
@@ -510,6 +558,8 @@ public class MainActivity extends FragmentActivity implements
 					return result;
 				} catch (Exception e) {
 					Log.d("communication", e.getMessage());
+					waiterId = null;
+					waiterName = null;
 				}
 			}
 			return false;
@@ -518,7 +568,7 @@ public class MainActivity extends FragmentActivity implements
 	}
 
 	public class OpenTempTableAsyncTask extends
-			AsyncTask<Void, Integer, Integer> {
+	AsyncTask<Void, Integer, Integer> {
 		@Override
 		protected void onPreExecute() {
 
@@ -571,6 +621,8 @@ public class MainActivity extends FragmentActivity implements
 				break;
 			case 1:
 				showToast("Order sent!", Toast.LENGTH_SHORT);
+				sentOrder = true;
+				launchTableDetailFragment();
 				break;
 			case 2:
 				showMessageDialog("Scan Table QR Code before sending order");
@@ -579,12 +631,9 @@ public class MainActivity extends FragmentActivity implements
 				showMessageDialog("Yikes! We couldn't send your order, please try again.\nIf the problem persists, contact the wait staff!");
 				break;
 			case 4:
-				for(FoodItem e : unavailableItems)
-				{
-					for(FoodItem f : order)
-					{
-						if(e.getID() == f.getID())
-						{
+				for (FoodItem e : unavailableItems) {
+					for (FoodItem f : order) {
+						if (e.getID() == f.getID()) {
 							f.setAvailable(e.isAvailable());
 						}
 					}
@@ -632,12 +681,10 @@ public class MainActivity extends FragmentActivity implements
 					if (unavailableItems != null) {
 						if (unavailableItems.size() == 0) {
 							return new Integer(1);
-						} 
-						else {
+						} else {
 							return new Integer(4);
 						}
-					} 
-					else {
+					} else {
 						return new Integer(3);
 					}
 
@@ -669,32 +716,28 @@ public class MainActivity extends FragmentActivity implements
 		customDialog.setPositiveButton("Submit",
 				new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
 
-						if (orderBG != null) {
-							orderBG.cancel(false);
-						}
-						orderBG = (SendOrderAsyncTask) new SendOrderAsyncTask()
-								.execute();
-						dialog.dismiss();
-						FragmentTransaction ft = fm.beginTransaction();
-						if ( table_detail_fragment == null) {
-							ft.replace(R.id.list_frame_layout,table_detail_fragment);
-							ft.commit();
-						}
-					}
-				});
+				if (orderBG != null) {
+					orderBG.cancel(false);
+				}
+				orderBG = (SendOrderAsyncTask) new SendOrderAsyncTask()
+				.execute();
+
+				dialog.dismiss();
+			}
+		});
 		customDialog.setNegativeButton("Back",
 				new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub
-						dialog.dismiss();
-					}
-				});
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.dismiss();
+			}
+		});
 
 		String info = "Total Price: $" + o.getTotalPrice();
 		information.setText(info);
@@ -742,12 +785,12 @@ public class MainActivity extends FragmentActivity implements
 		errorDialog.setPositiveButton("OK",
 				new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub
-						dialog.dismiss();
-					}
-				});
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.dismiss();
+			}
+		});
 
 		errorDialog.setIcon(android.R.drawable.ic_dialog_alert);
 		errorDialog.setTitle("Message");
