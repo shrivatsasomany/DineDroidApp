@@ -233,6 +233,20 @@ public class MainActivity extends FragmentActivity implements
 		}
 
 	}
+	
+	/*
+	 * return table id
+	 */
+	public int getTableId(){
+		return tableId;
+	}
+	
+	/*
+	 * return waiter id
+	 */
+	public int getWaiterId(){
+		return waiterId;
+	}
 
 	public void loadMenu() {
 		list.setVisibility(View.VISIBLE);

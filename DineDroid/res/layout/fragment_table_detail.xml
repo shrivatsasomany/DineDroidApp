@@ -13,14 +13,12 @@
 	        android:id="@+id/tableInfo"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Table"
 	        android:padding="10dp"
 	        android:textAppearance="?android:attr/textAppearanceMedium" />
 	    <TextView
 	        android:id="@+id/waiterInfo"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Waiter"
 	        android:padding="10dp"
 	        android:textAppearance="?android:attr/textAppearanceMedium"/>
 	        
@@ -28,7 +26,7 @@
 	        android:id="@+id/orederStatus"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Order Status"
+	        android:text="Order Status :"
 	        android:padding="10dp"
 	        android:textAppearance="?android:attr/textAppearanceMedium"/>
     </LinearLayout>

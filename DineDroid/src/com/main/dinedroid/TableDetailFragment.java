@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class TableDetailFragment extends Fragment {
+	private TextView tableId;
+	private TextView waiterId;
 
 	/**
 	 * @param args
@@ -28,8 +30,11 @@ public class TableDetailFragment extends Fragment {
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_food_detail,
 				container, false);
-		TextView tableInfo = (TextView) getActivity().findViewById(R.id.tableInfo);
-		tableInfo.setText("Table : ");
+		tableId = (TextView) getActivity().findViewById(R.id.tableInfo);
+		waiterId = (TextView) getActivity().findViewById(R.id.waiterInfo);
+		tableId.setText("Table : " + ((MainActivity)getActivity()).getTableId());
+		tableId.setText("Waiter : " + ((MainActivity)getActivity()).getWaiterId());
+
 		return rootView;
 	}
 }
