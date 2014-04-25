@@ -19,6 +19,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -60,6 +61,7 @@ public class MainActivity extends FragmentActivity implements
 	private FragmentManager fm;
 	private FoodListFragment menu_fragment = new FoodListFragment();
 	private FoodDetailFragment detail_fragment = new FoodDetailFragment();
+	private TableDetailFragment table_detail_fragment = new TableDetailFragment();
 	private FrameLayout list;
 	private FrameLayout details;
 	private LinearLayout scanLayout;
@@ -230,6 +232,20 @@ public class MainActivity extends FragmentActivity implements
 					"Error: Scan Table QR Code", Toast.LENGTH_SHORT).show();
 		}
 
+	}
+	
+	/*
+	 * return table id
+	 */
+	public int getTableId(){
+		return tableId;
+	}
+	
+	/*
+	 * return waiter id
+	 */
+	public int getWaiterId(){
+		return waiterId;
 	}
 
 	public void loadMenu() {
@@ -663,7 +679,11 @@ public class MainActivity extends FragmentActivity implements
 						orderBG = (SendOrderAsyncTask) new SendOrderAsyncTask()
 								.execute();
 						dialog.dismiss();
-
+						FragmentTransaction ft = fm.beginTransaction();
+						if ( table_detail_fragment == null) {
+							ft.replace(R.id.list_frame_layout,table_detail_fragment);
+							ft.commit();
+						}
 					}
 				});
 		customDialog.setNegativeButton("Back",
