@@ -29,7 +29,7 @@
             android:padding="10dp"
             android:text="Table: "
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="40sp" />
+            android:textSize="35sp" />
 
         <TextView
             android:id="@+id/fragment_table_detail_waiterInfo"
@@ -40,7 +40,7 @@
             android:padding="10dp"
             android:text="Waiter: "
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="40sp" />
+            android:textSize="35sp" />
 
         <TextView
             android:id="@+id/fragment_table_detail_orderStatus"
@@ -51,7 +51,7 @@
             android:padding="10dp"
             android:text="Status: "
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="40sp" />
+            android:textSize="35sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -71,7 +71,7 @@
             android:gravity="center|left"
             android:padding="10dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="40sp" />
+            android:textSize="35sp" />
 
         <TextView
             android:id="@+id/fragment_table_detail_waiterName"
@@ -81,7 +81,7 @@
             android:gravity="center|left"
             android:padding="10dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="40sp" />
+            android:textSize="35sp" />
 
         <TextView
             android:id="@+id/fragment_table_detail_numStatus"
@@ -92,7 +92,7 @@
             android:padding="10dp"
             android:text="Processing..."
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="40sp" />
+            android:textSize="35sp" />
     </LinearLayout>
 
 </RelativeLayout>
