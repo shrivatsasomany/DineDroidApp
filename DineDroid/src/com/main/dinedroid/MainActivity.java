@@ -82,6 +82,8 @@ FoodItemSelectionListener, MenuDownloadListener {
 	private final String SERVER_ADDRESS = "ServerAddress";
 	private final String PASSWORD = "password";
 	private final int SOCKET_TIMEOUT = 10000;
+	private final int ORDER_CHANGED = 1;
+	private final int SETTINGS_ACTIVITY = 1;
 	private String server_address;
 	private String password;
 	private SharedPreferences spref;
@@ -152,18 +154,19 @@ FoodItemSelectionListener, MenuDownloadListener {
 			loadCart();
 			return true;
 		case R.id.temp_icon:
-			openLoginDialog();
+			openLoginDialog(0);
 			return true;
 		case R.id.menu_settings:
-			DialogFragment newFragment = new LoginFragment();
-			newFragment.show(getFragmentManager(), "LoginFragment");
+			openLoginDialog(1);
+			//DialogFragment newFragment = new LoginFragment();
+			//newFragment.show(getFragmentManager(), "LoginFragment");
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
-	public void openLoginDialog() {
+	public void openLoginDialog(final int option) {
 		password = spref.getString(PASSWORD, "admin");
 		Toast.makeText(getApplicationContext(), password, Toast.LENGTH_LONG)
 		.show();
@@ -177,12 +180,18 @@ FoodItemSelectionListener, MenuDownloadListener {
 		customDialog.setTitle("Enter Password");
 		customDialog.setPositiveButton("Ok",
 				new DialogInterface.OnClickListener() {
-
+		
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
 				if (et.getText().toString().equals(password)) {
-					openTemp();
+					if(option == 0)
+						openTemp();
+					else{
+						Intent i=new Intent(getApplicationContext(), SettingsActivity.class);
+				    	startActivityForResult(i, SETTINGS_ACTIVITY);
+					}
+						
 				} else {
 					Toast.makeText(getApplicationContext(),
 							"Incorrect Password! ", Toast.LENGTH_LONG)
