@@ -467,7 +467,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 				s.close();
 				return serverResult;
 			} catch (Exception e) {
-				Log.d("communication", e.getMessage());
+				Log.d("communication", "Comm error");
 			}
 			return null;
 		}
@@ -498,7 +498,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 			if (waiterId != null) {
 				try {
 					s = new Socket(server_address, 4322);
-					s.setSoTimeout(SOCKET_TIMEOUT);
+					s.setSoTimeout(100000);
 					out = new ObjectOutputStream(s.getOutputStream());
 					out.writeObject("Hail||Set_Hail||" + tableId);
 					in = new ObjectInputStream(s.getInputStream());
@@ -508,7 +508,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 					s.close();
 					return result;
 				} catch (Exception e) {
-					Log.d("communication", e.getMessage());
+					Log.d("communication", "Comm error");
 				}
 			}
 			return false;
@@ -557,7 +557,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 					s.close();
 					return result;
 				} catch (Exception e) {
-					Log.d("communication", e.getMessage());
+					Log.d("communication", "Comm error");
 					waiterId = null;
 					waiterName = null;
 				}
@@ -600,7 +600,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 				s.close();
 				return new Integer(1);
 			} catch (Exception e) {
-				Log.d("communication", e.getMessage());
+				Log.d("communication", "Comm error");
 				return new Integer(0);
 			}
 		}
