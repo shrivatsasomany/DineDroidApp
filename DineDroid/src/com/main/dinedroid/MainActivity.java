@@ -79,17 +79,20 @@ FoodItemSelectionListener, MenuDownloadListener {
 	private SendOrderAsyncTask orderBG;
 	private AttachWaiterAsyncTask waiterBG;
 	private HailWaiterAsyncTask hailBG;
+	private CloseOrderAsyncTask closeOrderBG;
 	private final String SERVER_ADDRESS = "ServerAddress";
 	private final String PASSWORD = "password";
+	private final String ORDER_STATUS = "OrderStatus";
 	private final int SOCKET_TIMEOUT = 10000;
-	private final int ORDER_CHANGED = 1;
-	private final int SETTINGS_ACTIVITY = 1;
+	private final int TEMP_TABLE_OPTION = 0;
+	private final int SETTINGS_OPTION = 1;
 	private String server_address;
 	private String password;
+	private boolean order_status;
+	private boolean sentOrder;
 	private SharedPreferences spref;
 	private OrderListAdapter orderListAdapter;
 	private ArrayList<FoodItem> order = new ArrayList<FoodItem>();
-	private boolean sentOrder = false;
 	ArrayList<FoodItem> unavailableItems;
 
 	@Override
@@ -154,12 +157,10 @@ FoodItemSelectionListener, MenuDownloadListener {
 			loadCart();
 			return true;
 		case R.id.temp_icon:
-			openLoginDialog(0);
+			openLoginDialog(TEMP_TABLE_OPTION);
 			return true;
 		case R.id.menu_settings:
-			openLoginDialog(1);
-			//DialogFragment newFragment = new LoginFragment();
-			//newFragment.show(getFragmentManager(), "LoginFragment");
+			openLoginDialog(SETTINGS_OPTION);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -168,9 +169,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 
 	public void openLoginDialog(final int option) {
 		password = spref.getString(PASSWORD, "admin");
-		Toast.makeText(getApplicationContext(), password, Toast.LENGTH_LONG)
-		.show();
-
+		
 		AlertDialog.Builder customDialog = new AlertDialog.Builder(this);
 		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -189,7 +188,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 						openTemp();
 					else{
 						Intent i=new Intent(getApplicationContext(), SettingsActivity.class);
-				    	startActivityForResult(i, SETTINGS_ACTIVITY);
+				    	startActivityForResult(i, 0);
 					}
 						
 				} else {
@@ -279,6 +278,13 @@ FoodItemSelectionListener, MenuDownloadListener {
 	public void getPreferences() {
 		server_address = spref.getString(SERVER_ADDRESS, "10.0.1.14");
 		password = spref.getString(PASSWORD, "admin");
+		order_status = spref.getBoolean(ORDER_STATUS, true);
+		if(!order_status){
+			if(closeOrderBG !=null){
+				closeOrderBG.cancel(false);
+			}
+			closeOrderBG = (CloseOrderAsyncTask) new CloseOrderAsyncTask().execute();
+		}
 	}
 
 	@Override
@@ -476,7 +482,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 				s.close();
 				return serverResult;
 			} catch (Exception e) {
-				Log.d("communication", e.getMessage());
+				Log.d("communication","Comm error");
 			}
 			return null;
 		}
@@ -525,8 +531,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 
 	}
 
-	public class AttachWaiterAsyncTask extends
-	AsyncTask<Void, Integer, Boolean> {
+	public class AttachWaiterAsyncTask extends AsyncTask<Void, Integer, Boolean> {
 		@Override
 		protected void onPreExecute() {
 
@@ -706,6 +711,40 @@ FoodItemSelectionListener, MenuDownloadListener {
 			}
 		}
 
+	}
+	
+	public class CloseOrderAsyncTask extends AsyncTask<Void, Integer, Integer>{
+
+		@Override
+		protected void onPostExecute(Integer result) {
+			if (result.equals(1)) {
+				showMessageDialog("Order Closed successfully");
+			} else {
+				showMessageDialog("Could not close the order, please try again");
+			}
+		}
+		
+		@Override
+		protected Integer doInBackground(Void... params) {
+			// read from sharedPref
+			// getPreferences();
+			// TODO Auto-generated method stub
+			try {
+				s = new Socket(server_address, 4322);
+				s.setSoTimeout(SOCKET_TIMEOUT);
+				out = new ObjectOutputStream(s.getOutputStream());
+				out.writeObject("Order||Remove_Table_Order||"+ tableId);
+				//in = new ObjectInputStream(s.getInputStream());
+				//in.close();
+				out.close();
+				s.close();
+				return new Integer(1);
+			} catch (Exception e) {
+				Log.d("communication", e.getMessage());
+				return new Integer(0);
+			}
+		}
+		
 	}
 
 	public void showOrderDialog(String message) {

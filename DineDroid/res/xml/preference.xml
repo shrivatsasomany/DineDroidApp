@@ -11,8 +11,11 @@
     android:title="Change Password"
     android:password="true" />
     
-  <!--   <SwitchPreference 
+    <SwitchPreference 
         android:key="OrderStatus"
-        android:summaryOn=""/>-->
+        android:switchTextOn="Open"
+        android:switchTextOff="Closed"
+        android:title="Order Status"
+        android:defaultValue="true"/>
 
 </PreferenceScreen>
