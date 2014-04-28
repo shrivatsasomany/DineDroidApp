@@ -90,7 +90,7 @@
             android:layout_weight="1"
             android:gravity="center|left"
             android:padding="10dp"
-            android:text="Processing..."
+            android:text="mystatus"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="35sp" />
     </LinearLayout>

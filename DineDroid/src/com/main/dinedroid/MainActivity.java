@@ -79,15 +79,20 @@ FoodItemSelectionListener, MenuDownloadListener {
 	private SendOrderAsyncTask orderBG;
 	private AttachWaiterAsyncTask waiterBG;
 	private HailWaiterAsyncTask hailBG;
+	private CloseOrderAsyncTask closeOrderBG;
 	private final String SERVER_ADDRESS = "ServerAddress";
 	private final String PASSWORD = "password";
+	private final String ORDER_STATUS = "OrderStatus";
 	private final int SOCKET_TIMEOUT = 10000;
+	private final int TEMP_TABLE_OPTION = 0;
+	private final int SETTINGS_OPTION = 1;
 	private String server_address;
 	private String password;
+	private boolean order_status;
+	private boolean sentOrder;
 	private SharedPreferences spref;
 	private OrderListAdapter orderListAdapter;
 	private ArrayList<FoodItem> order = new ArrayList<FoodItem>();
-	private boolean sentOrder = false;
 	ArrayList<FoodItem> unavailableItems;
 
 	@Override
@@ -152,22 +157,20 @@ FoodItemSelectionListener, MenuDownloadListener {
 			loadCart();
 			return true;
 		case R.id.temp_icon:
-			openLoginDialog();
+			openLoginDialog(TEMP_TABLE_OPTION);
 			return true;
 		case R.id.menu_settings:
-			DialogFragment newFragment = new LoginFragment();
-			newFragment.show(getFragmentManager(), "LoginFragment");
+			openLoginDialog(SETTINGS_OPTION);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
+	
 
-	public void openLoginDialog() {
+	public void openLoginDialog(final int option) {
 		password = spref.getString(PASSWORD, "admin");
-		Toast.makeText(getApplicationContext(), password, Toast.LENGTH_LONG)
-		.show();
-
+		
 		AlertDialog.Builder customDialog = new AlertDialog.Builder(this);
 		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -177,12 +180,18 @@ FoodItemSelectionListener, MenuDownloadListener {
 		customDialog.setTitle("Enter Password");
 		customDialog.setPositiveButton("Ok",
 				new DialogInterface.OnClickListener() {
-
+		
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
 				if (et.getText().toString().equals(password)) {
-					openTemp();
+					if(option == 0)
+						openTemp();
+					else{
+						Intent i=new Intent(getApplicationContext(), SettingsActivity.class);
+				    	startActivityForResult(i, 0);
+					}
+						
 				} else {
 					Toast.makeText(getApplicationContext(),
 							"Incorrect Password! ", Toast.LENGTH_LONG)
@@ -270,6 +279,13 @@ FoodItemSelectionListener, MenuDownloadListener {
 	public void getPreferences() {
 		server_address = spref.getString(SERVER_ADDRESS, "10.0.1.14");
 		password = spref.getString(PASSWORD, "admin");
+		order_status = spref.getBoolean(ORDER_STATUS, true);
+		if(order.size() != 0 && !order_status){
+			if(closeOrderBG !=null){
+				closeOrderBG.cancel(false);
+			}
+			closeOrderBG = (CloseOrderAsyncTask) new CloseOrderAsyncTask().execute();
+		}
 	}
 
 	@Override
@@ -467,7 +483,8 @@ FoodItemSelectionListener, MenuDownloadListener {
 				s.close();
 				return serverResult;
 			} catch (Exception e) {
-				Log.d("communication", "Comm error");
+
+				Log.d("communication","Comm error");
 			}
 			return null;
 		}
@@ -485,7 +502,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 			if (result) {
 				showMessageDialog("Your waiter has been hailed!");
 			} else {
-				showMessageDialog("Oops! Something went wrong, please try again.\nIf this problem persists, please notify the wait staff!");
+				showMessageDialog("Oops! You've already hailed this waiter\nIf you think this is a problem, please flag down the wait staff!");
 			}
 		}
 
@@ -516,8 +533,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 
 	}
 
-	public class AttachWaiterAsyncTask extends
-	AsyncTask<Void, Integer, Boolean> {
+	public class AttachWaiterAsyncTask extends AsyncTask<Void, Integer, Boolean> {
 		@Override
 		protected void onPreExecute() {
 
@@ -697,6 +713,44 @@ FoodItemSelectionListener, MenuDownloadListener {
 			}
 		}
 
+	}
+	
+	public class CloseOrderAsyncTask extends AsyncTask<Void, Integer, Boolean>{
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if (result.equals(true)) {
+				order.clear();
+				orderListAdapter.notifyDataSetChanged();
+				//Remove table detail fragment
+				showMessageDialog("Order Closed successfully");
+			} else {
+				showMessageDialog("Could not close the order, please try again");
+			}
+		}
+		
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			// read from sharedPref
+			// getPreferences();
+			// TODO Auto-generated method stub
+			try {
+				s = new Socket(server_address, 4322);
+				s.setSoTimeout(SOCKET_TIMEOUT);
+				out = new ObjectOutputStream(s.getOutputStream());
+				out.writeObject("Table||Remove_Table_Order||"+ tableId);
+				in = new ObjectInputStream(s.getInputStream());
+				boolean result = in.readBoolean();
+				in.close();
+				out.close();
+				s.close();
+				return result;
+			} catch (Exception e) {
+				Log.d("communication", "Comm Error");
+				return false;
+			}
+		}
+		
 	}
 
 	public void showOrderDialog(String message) {
