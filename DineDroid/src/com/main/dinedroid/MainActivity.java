@@ -166,6 +166,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 			return super.onOptionsItemSelected(item);
 		}
 	}
+	
 
 	public void openLoginDialog(final int option) {
 		password = spref.getString(PASSWORD, "admin");
