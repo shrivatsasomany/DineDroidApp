@@ -17,39 +17,67 @@ public class Waiter implements Serializable {
 		this.tables = new ArrayList<Table>();
 		this.hailQueue = new ArrayList<Table>();
 	}
-
+	/**
+	 * 
+	 * @return id Waiter id
+	 */
 	public int getId() {
 		return id;
 	}
-
+	/**
+	 * 
+	 * @param id Waiter id
+	 */
 	public void setId(int id) {
 		this.id = id;
 	}
-
+	/**
+	 * 
+	 * @return fname Waiter's First Name
+	 */
 	public String getFName() {
 		return fname;
 	}
-
+	/**
+	 * 
+	 * @param fname Waiter's First Name
+	 */
 	public void setFName(String fname) {
 		this.fname = fname;
 	}
-	
+	/**
+	 * 
+	 * @return lname Waiter's last name
+	 */
 	public String getLName() {
 		return lname;
 	}
-
+	/**
+	 * 
+	 * @param fname
+	 */
 	public void setLName(String fname) {
 		this.lname = fname;
 	}
-
+	/**
+	 * 
+	 * @return tables List of Tables for the Waiter
+	 */
 	public ArrayList<Table> getTables() {
 		return tables;
 	}
-
+	/**
+	 * 
+	 * @param tables
+	 */
 	public void setTables(ArrayList<Table> tables) {
 		this.tables = tables;
 	}
-	
+	/**
+	 * 
+	 * @param table
+	 * @return boolean true on successful addition of table, false otherwise
+	 */
 	public boolean addTable(Table table)
 	{
 		for(Table t : tables)
@@ -62,12 +90,16 @@ public class Waiter implements Serializable {
 		tables.add(table);
 		return true;
 	}
-	
+	/**
+	 * 
+	 * @param tableId
+	 * @return boolean true on successful removal of table, false otherwise
+	 */
 	public boolean removeTable(int tableId)
 	{
 		for(int i = 0; i < tables.size(); ++i)
 		{
-			if(tables.get(i).getId().equals(tableId))
+			if(tables.get(i).getId() == tableId)
 			{
 				tables.remove(i);
 				return true;
@@ -75,7 +107,10 @@ public class Waiter implements Serializable {
 		}
 		return false;
 	}
-	
+	/**
+	 * 
+	 * @return boolean true on successful removal of all tables, false otherwise
+	 */
 	public boolean removeAllTables()
 	{
 		for(int i = 0; i < tables.size(); ++i)
@@ -84,15 +119,25 @@ public class Waiter implements Serializable {
 		}
 		return true;
 	}
-
+	/**
+	 * 
+	 * @return hailQueue Hail Queue for the waiter
+	 */
 	public ArrayList<Table> getHailQueue() {
 		return hailQueue;
 	}
-
+	/**
+	 * 
+	 * @param hailQueue
+	 */
 	public void setHailQueue(ArrayList<Table> hailQueue) {
 		this.hailQueue = hailQueue;
 	}
-	
+	/**
+	 * 
+	 * @param table
+	 * @return boolean true on successful addition of hail, false otherwise
+	 */
 	public synchronized boolean addHail(Table table)
 	{
 		for(int i = 0; i < hailQueue.size(); ++i)
@@ -104,7 +149,11 @@ public class Waiter implements Serializable {
 		}
 		return (this.hailQueue.add(table));
 	}
-	
+	/**
+	 * 
+	 * @param tableId
+	 * @return boolean true on successful removal of hail, false otherwise
+	 */
 	public synchronized boolean removeHail(int tableId)
 	{
 		for(int i = 0; i < hailQueue.size(); ++i)
@@ -117,7 +166,10 @@ public class Waiter implements Serializable {
 		}
 		return false;
 	}
-
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -125,7 +177,10 @@ public class Waiter implements Serializable {
 		result = prime * result + id;
 		return result;
 	}
-
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -139,7 +194,10 @@ public class Waiter implements Serializable {
 			return false;
 		return true;
 	}
-	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString()
 	{
 		String tableInfo = "";

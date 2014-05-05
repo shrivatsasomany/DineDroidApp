@@ -10,43 +10,70 @@ public class Order implements Serializable {
 	private int tableId;
 	private ArrayList<FoodItem> order;
 	private String orderNotes;
-	
+	/**
+	 * 
+	 * @param order
+	 */
 	public Order(ArrayList<FoodItem> order)
 	{
 		this.order = order;
 		
 	}
-	
+	/**
+	 * 
+	 * @return order
+	 */
 	public ArrayList<FoodItem> getOrder()
 	{
 		return order;
 	}
-	
+	/**
+	 * 
+	 * @param order
+	 */
 	public void setOrder(ArrayList<FoodItem> order)
 	{
 		this.order = order;
 	}
 	
+	/**
+	 * 
+	 * @return tableId
+	 */
 	public int getOrderTable()
 	{
 		return tableId;
 	}
 	
+	/**
+	 * 
+	 * @param tableId
+	 */
 	public void setOrderTable(int tableId)
 	{
 		this.tableId = tableId;
 	}
 	
+	/**
+	 * 
+	 * @param orderNotes
+	 */
 	public void setOrderNotes(String orderNotes)
 	{
 		this.orderNotes = orderNotes;
 	}
-	
+	/**
+	 * 
+	 * @return orderNotes
+	 */
 	public String getOrderNotes()
 	{
 		return orderNotes;
 	}
-	
+	/**
+	 * 
+	 * @return totalPrice Total prize calcualted for the order
+	 */
 	public double getTotalPrice()
 	{
 		double totalPrice = 0;
@@ -61,7 +88,10 @@ public class Order implements Serializable {
 		}
 		return totalPrice;
 	}
-	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString()
 	{
 		return "Table: "+tableId;
