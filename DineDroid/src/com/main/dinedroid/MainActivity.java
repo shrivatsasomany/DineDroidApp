@@ -760,6 +760,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 				showMessageDialog("Order Closed successfully");
 			} else {
 				showMessageDialog("Could not close the order, please try again");
+				updatePreferences(true);
 			}
 		}
 		
