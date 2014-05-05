@@ -16,6 +16,6 @@
         android:switchTextOn="Open"
         android:switchTextOff="Closed"
         android:title="Order Status"
-        android:defaultValue="true"/>
+        android:defaultValue="false"/>
 
 </PreferenceScreen>

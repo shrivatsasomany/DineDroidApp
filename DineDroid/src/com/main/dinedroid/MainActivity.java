@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -83,7 +84,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 	private final String SERVER_ADDRESS = "ServerAddress";
 	private final String PASSWORD = "password";
 	private final String ORDER_STATUS = "OrderStatus";
-	private final int SOCKET_TIMEOUT = 10000;
+	private final int SOCKET_TIMEOUT = 100000;
 	private final int TEMP_TABLE_OPTION = 0;
 	private final int SETTINGS_OPTION = 1;
 	private String server_address;
@@ -123,6 +124,10 @@ FoodItemSelectionListener, MenuDownloadListener {
 
 	}
 
+	/**
+	 *
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		ActionBar actionBar = getActionBar();
@@ -130,16 +135,15 @@ FoodItemSelectionListener, MenuDownloadListener {
 		actionBar.setDisplayShowTitleEnabled(false);
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		myMenu = menu;
-		// View mActionBar = getLayoutInflater()
-		// .inflate(R.layout.action_bar, null);
-		// actionBar.setCustomView(mActionBar);
-		// actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-		// scanLayout = (LinearLayout)mActionBar.findViewById(R.id.qr_layout);
-		// tempTableLayout =
-		// (LinearLayout)mActionBar.findViewById(R.id.table_layout);
 		return true;
 	}
 
+	
+
+	/**
+	 * 
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -168,6 +172,11 @@ FoodItemSelectionListener, MenuDownloadListener {
 	}
 	
 
+	/**
+	 * Displays a dialog which asks for the password
+	 * This also authenticates it
+	 * @param option 
+	 */
 	public void openLoginDialog(final int option) {
 		password = spref.getString(PASSWORD, "admin");
 		
@@ -213,6 +222,9 @@ FoodItemSelectionListener, MenuDownloadListener {
 		d.show();
 	}
 
+	/**
+	 * Start the hail waiter AsyncTask
+	 */
 	public void hailWaiter() {
 		if (waiterId != null) {
 			if (hailBG != null) {
@@ -225,10 +237,16 @@ FoodItemSelectionListener, MenuDownloadListener {
 		}
 	}
 
+	/**
+	 * Turn on the scanner of the ZXing Library
+	 */
 	public void startScan() {
 		IntentIntegrator.initiateScan(MainActivity.this, zxingLibConfig);
 	}
 
+	/**
+	 * Start the temp table AysncTask
+	 */
 	public void openTemp() {
 		if (tempBG != null) {
 			tempBG.cancel(false);
@@ -237,12 +255,25 @@ FoodItemSelectionListener, MenuDownloadListener {
 		.execute();
 	}
 
+	/**
+	 * Check if the Table has been opened, if so
+	 * open the dialog. 
+	 * If not, notify the user with a toast that a
+	 * table must be scanned first. 
+	 */
 	public void loadCart() {
-		if (tableId != null) {
+		if (tableId != null && order.size() > 0) {
 			showOrderDialog("");
 		} else {
+			if(order.size() == 0)
+			{
+				showMessageDialog("Your order is empty!");
+			}
+			else
+			{
 			Toast.makeText(getApplicationContext(),
 					"Error: Scan Table QR Code", Toast.LENGTH_SHORT).show();
+			}
 		}
 
 	}
@@ -261,6 +292,9 @@ FoodItemSelectionListener, MenuDownloadListener {
 		return waiterId;
 	}
 
+	/**
+	 * Load the menu on the left fragment
+	 */
 	public void loadMenu() {
 		list.setVisibility(View.VISIBLE);
 		highlightMenuFragment();
@@ -275,19 +309,33 @@ FoodItemSelectionListener, MenuDownloadListener {
 		}
 
 	}
-
+	/**
+	 * retrieve the variables stored in the preference file
+	 */
 	public void getPreferences() {
 		server_address = spref.getString(SERVER_ADDRESS, "10.0.1.14");
 		password = spref.getString(PASSWORD, "admin");
-		order_status = spref.getBoolean(ORDER_STATUS, true);
-		if(order.size() != 0 && !order_status){
+		order_status = spref.getBoolean(ORDER_STATUS, false);
+		if(!order_status && order.size() > 0){
 			if(closeOrderBG !=null){
 				closeOrderBG.cancel(false);
 			}
 			closeOrderBG = (CloseOrderAsyncTask) new CloseOrderAsyncTask().execute();
 		}
 	}
+	/**
+	 * Sets the order status stored in the preference file to true.
+	 */
+	public void updatePreferences(boolean value){
+		Editor sprefEditor = spref.edit();
+		sprefEditor.putBoolean(ORDER_STATUS, value);
+		sprefEditor.commit();
+	}
 
+	/**
+	 * 
+	 * @see android.support.v4.app.FragmentActivity#onActivityResult(int, int, android.content.Intent)
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -334,6 +382,10 @@ FoodItemSelectionListener, MenuDownloadListener {
 		}
 	}
 
+	/**
+	 * 
+	 * @see com.main.dinedroid.FoodListFragment.MenuListSelectionListener#onMenuListSelection(com.main.dinedroid.menu.FoodItem)
+	 */
 	@Override
 	public void onMenuListSelection(FoodItem item) {
 		// TODO Auto-generated method stub
@@ -374,6 +426,10 @@ FoodItemSelectionListener, MenuDownloadListener {
 		}
 	}
 
+	/**
+	 * 
+	 * @see com.main.dinedroid.FoodDetailFragment.DetailListSelectionListener#onDetailListSelection(com.main.dinedroid.menu.FoodItem)
+	 */
 	@Override
 	public void onDetailListSelection(FoodItem item) {
 		// TODO Auto-generated method stub
@@ -386,6 +442,10 @@ FoodItemSelectionListener, MenuDownloadListener {
 
 	}
 
+	/**
+	 * 
+	 * @see com.main.dinedroid.FoodDetailFragment.FoodItemSelectionListener#onFoodItemSelected(com.main.dinedroid.menu.FoodItem)
+	 */
 	@Override
 	public void onFoodItemSelected(FoodItem item) {
 		// TODO Auto-generated method stub
@@ -395,6 +455,9 @@ FoodItemSelectionListener, MenuDownloadListener {
 		orderListAdapter.notifyDataSetChanged();
 	}
 
+	/**
+	 * Switch the shadow side to highlight the menu
+	 */
 	public void highlightMenuFragment() {
 		detailShadow.setVisibility(View.VISIBLE);
 		menuShadow.setVisibility(View.GONE);
@@ -402,12 +465,17 @@ FoodItemSelectionListener, MenuDownloadListener {
 			launchTableDetailFragment();
 		}
 	}
-
+	/**
+	 * Switch the shadow side to highlight the categories
+	 */
 	public void highlightDetailFragment() {
 		detailShadow.setVisibility(View.GONE);
 		menuShadow.setVisibility(View.VISIBLE);
 	}
 
+	/**
+	 * Launch the Table Detail fragment
+	 */
 	public void launchTableDetailFragment() {
 		table_detail_fragment = new TableDetailFragment();
 		Bundle myBundle = new Bundle();
@@ -426,6 +494,9 @@ FoodItemSelectionListener, MenuDownloadListener {
 		}
 	}
 
+	/**
+	 * Send request to the server to open the table
+	 */
 	public class OpenTableAysncTask extends AsyncTask<Void, Integer, Restore> {
 		@Override
 		protected void onPreExecute() {
@@ -491,6 +562,9 @@ FoodItemSelectionListener, MenuDownloadListener {
 
 	}
 
+	/**
+	 * Send a command to the server to hail the waiter
+	 */
 	public class HailWaiterAsyncTask extends AsyncTask<Void, Integer, Boolean> {
 		@Override
 		protected void onPreExecute() {
@@ -582,7 +656,10 @@ FoodItemSelectionListener, MenuDownloadListener {
 		}
 
 	}
-
+	
+	/**
+	 * Send a command to the server to open a temporary table
+	 */
 	public class OpenTempTableAsyncTask extends
 	AsyncTask<Void, Integer, Integer> {
 		@Override
@@ -623,6 +700,10 @@ FoodItemSelectionListener, MenuDownloadListener {
 
 	}
 
+	/**
+	 * Send a command to the server to set an order
+	 * Then send the order
+	 */
 	public class SendOrderAsyncTask extends AsyncTask<Void, Integer, Integer> {
 		@Override
 		protected void onPreExecute() {
@@ -639,6 +720,8 @@ FoodItemSelectionListener, MenuDownloadListener {
 				showToast("Order sent!", Toast.LENGTH_SHORT);
 				sentOrder = true;
 				launchTableDetailFragment();
+				//set order status to 'open'
+				updatePreferences(true);
 				break;
 			case 2:
 				showMessageDialog("Scan Table QR Code before sending order");
@@ -715,6 +798,9 @@ FoodItemSelectionListener, MenuDownloadListener {
 
 	}
 	
+	/**
+	 * Send a command to the server to close an order
+	 */
 	public class CloseOrderAsyncTask extends AsyncTask<Void, Integer, Boolean>{
 
 		@Override
@@ -726,6 +812,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 				showMessageDialog("Order Closed successfully");
 			} else {
 				showMessageDialog("Could not close the order, please try again");
+				updatePreferences(true);
 			}
 		}
 		
@@ -733,6 +820,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 		protected Boolean doInBackground(Void... params) {
 			// read from sharedPref
 			// getPreferences();
+
 			// TODO Auto-generated method stub
 			try {
 				s = new Socket(server_address, 4322);
@@ -753,6 +841,7 @@ FoodItemSelectionListener, MenuDownloadListener {
 		
 	}
 
+	
 	public void showOrderDialog(String message) {
 		orderListAdapter.notifyDataSetChanged();
 		final Order o = new Order(order);
