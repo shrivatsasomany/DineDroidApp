@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -275,19 +276,33 @@ FoodItemSelectionListener, MenuDownloadListener {
 		}
 
 	}
-
+	/*
+	 * retreive the variables stored in the preference file
+	 */
 	public void getPreferences() {
 		server_address = spref.getString(SERVER_ADDRESS, "10.0.1.14");
 		password = spref.getString(PASSWORD, "admin");
-		order_status = spref.getBoolean(ORDER_STATUS, true);
-		if(!order_status){
+		order_status = spref.getBoolean(ORDER_STATUS, false);
+		if(!order_status && order.size() > 0){
 			if(closeOrderBG !=null){
 				closeOrderBG.cancel(false);
 			}
 			closeOrderBG = (CloseOrderAsyncTask) new CloseOrderAsyncTask().execute();
 		}
 	}
+	/*
+	 * Sets the order satus stored in the preference file to true.
+	 */
+	public void updatePreferences(boolean value){
+		Editor sprefEditor = spref.edit();
+		sprefEditor.putBoolean(ORDER_STATUS, value);
+		sprefEditor.commit();
+	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onActivityResult(int, int, android.content.Intent)
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -334,6 +349,10 @@ FoodItemSelectionListener, MenuDownloadListener {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.main.dinedroid.FoodListFragment.MenuListSelectionListener#onMenuListSelection(com.main.dinedroid.menu.FoodItem)
+	 */
 	@Override
 	public void onMenuListSelection(FoodItem item) {
 		// TODO Auto-generated method stub
@@ -374,6 +393,10 @@ FoodItemSelectionListener, MenuDownloadListener {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.main.dinedroid.FoodDetailFragment.DetailListSelectionListener#onDetailListSelection(com.main.dinedroid.menu.FoodItem)
+	 */
 	@Override
 	public void onDetailListSelection(FoodItem item) {
 		// TODO Auto-generated method stub
@@ -386,6 +409,10 @@ FoodItemSelectionListener, MenuDownloadListener {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.main.dinedroid.FoodDetailFragment.FoodItemSelectionListener#onFoodItemSelected(com.main.dinedroid.menu.FoodItem)
+	 */
 	@Override
 	public void onFoodItemSelected(FoodItem item) {
 		// TODO Auto-generated method stub
@@ -395,6 +422,9 @@ FoodItemSelectionListener, MenuDownloadListener {
 		orderListAdapter.notifyDataSetChanged();
 	}
 
+	/*
+	 * 
+	 */
 	public void highlightMenuFragment() {
 		detailShadow.setVisibility(View.VISIBLE);
 		menuShadow.setVisibility(View.GONE);
@@ -408,6 +438,9 @@ FoodItemSelectionListener, MenuDownloadListener {
 		menuShadow.setVisibility(View.VISIBLE);
 	}
 
+	/*
+	 * Launch the Table Detail fragment
+	 */
 	public void launchTableDetailFragment() {
 		table_detail_fragment = new TableDetailFragment();
 		Bundle myBundle = new Bundle();
@@ -426,6 +459,9 @@ FoodItemSelectionListener, MenuDownloadListener {
 		}
 	}
 
+	/*
+	 * Send request to the server to open the table
+	 */
 	public class OpenTableAysncTask extends AsyncTask<Void, Integer, Restore> {
 		@Override
 		protected void onPreExecute() {
@@ -638,6 +674,8 @@ FoodItemSelectionListener, MenuDownloadListener {
 				showToast("Order sent!", Toast.LENGTH_SHORT);
 				sentOrder = true;
 				launchTableDetailFragment();
+				//set order status to 'open'
+				updatePreferences(true);
 				break;
 			case 2:
 				showMessageDialog("Scan Table QR Code before sending order");
@@ -727,8 +765,6 @@ FoodItemSelectionListener, MenuDownloadListener {
 		
 		@Override
 		protected Integer doInBackground(Void... params) {
-			// read from sharedPref
-			// getPreferences();
 			// TODO Auto-generated method stub
 			try {
 				s = new Socket(server_address, 4322);
